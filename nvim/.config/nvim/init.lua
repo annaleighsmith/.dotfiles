@@ -2,6 +2,7 @@
 -- ================= EDITED FROM FOLKE'S KICKSTART  ====================
 -- =====================================================================
 -- https://learnxinyminutes.com/docs/lua/
+-- https://github.com/nvim-lua/kickstart.nvim
 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
