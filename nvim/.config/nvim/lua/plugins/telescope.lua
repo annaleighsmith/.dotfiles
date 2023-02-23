@@ -10,5 +10,17 @@ return {
         desc = "Find Plugin File",
       },
     },
+    opts = {
+      defaults = {
+        layout_strategy = "flex",
+        layout_config = {
+          width = 0.8,
+          height = 0.8,
+          prompt_position = "top",
+        },
+        sorting_strategy = "ascending",
+        winblend = 10,
+      },
+    },
   },
 }

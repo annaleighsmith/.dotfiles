@@ -63,7 +63,7 @@ symbol = ' '
 format = ' $symbol$version $virtualenv '
 
 [rust]
-format = ' $symbol$version '
+format = ' $symbol '
 
 [lua]
 symbol = ' '
