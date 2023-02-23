@@ -1,4 +1,6 @@
 nvim/.config/nvim/lazy-lock.json
-*/__pycache__/
-
-
+ranger/.config/ranger/colorschemes/__pycache__/default.cpython-310.opt-1.pyc 
+ranger/.config/ranger/colorschemes/__pycache__/__init__.cpython-310.opt-1.pyc
+ranger/.config/ranger/plugins/__pycache__/__init__.cpython-310.opt-1.pyc
+ranger/.config/ranger/plugins/__pycache__ 
+ranger/.config/ranger/plugins/ranger_devicons
