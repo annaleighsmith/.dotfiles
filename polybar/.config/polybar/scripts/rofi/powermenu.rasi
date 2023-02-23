@@ -1,0 +1,124 @@
+/*******************************************************
+ * ROFI configs i3 powermenu for EndeavourOS
+ * Maintainer: joekamprad <joekamprad@endeavouros.com>
+ *******************************************************/
+configuration {
+    font:            "Fira Sans Regular 12";
+    show-icons:      false;
+    icon-theme:      "Qogir";
+    scroll-method:   0;
+    disable-history: false;
+    sidebar-mode:    false;
+}
+
+@import "~/.config/polybar/scripts/rofi/colors.rasi"
+
+window {
+    background-color: @bga;
+    border:           0;
+    padding:          3;
+    transparency:     "real";
+    width:            120px;
+    location:         northeast;
+    x-offset:         -15;
+    y-offset:         40;
+}
+listview {
+    lines:     4;
+    columns:   1;
+    scrollbar: false;
+}
+element {
+    border:  0;
+    padding: 0px;
+}
+element-text {
+    background-color: inherit;
+    text-color:       inherit;
+}
+element.normal.normal {
+    background-color: @bga;
+    text-color:       @fg;
+}
+element.normal.urgent {
+    background-color: @red;
+    text-color:       @fg;
+}
+element.normal.active {
+    background-color: @bga;
+    text-color:       @fga;
+}
+element.selected.normal {
+    background-color: @hl;
+    text-color:       @bga;
+}
+element.selected.urgent {
+    background-color: @red;
+    text-color:       @fga;
+}
+element.selected.active {
+    background-color: @bga;
+    text-color:       @fga;
+}
+element.alternate.normal {
+    background-color: @bga;
+    text-color:       @fg;
+}
+element.alternate.urgent {
+    background-color: @red;
+    text-color:       @fg;
+}
+element.alternate.active {
+    background-color: @bga;
+    text-color:       @fga;
+}
+scrollbar {
+    width:        4px;
+    border:       0;
+    handle-color: @blue;
+    handle-width: 8px;
+    padding:      0;
+}
+mode-switcher {
+    border:       2px 0px 0px;
+    border-color: @bg;
+}
+button {
+    spacing:    0;
+    text-color: @blue;
+}
+button.selected {
+    background-color: @bga;
+    text-color:       @fga;
+}
+inputbar {
+    spacing:    0;
+    text-color: @fg;
+    padding:    1px;
+}
+case-indicator {
+    spacing:    0;
+    text-color: @fg;
+}
+entry {
+    spacing:    0;
+    text-color: @fg;
+}
+prompt {
+    spacing:    0;
+    text-color: @fg;
+}
+inputbar {
+    children:   [ prompt,textbox-prompt-colon,entry,case-indicator ];
+}
+textbox-prompt-colon {
+    expand:     false;
+    str:        ":";
+    margin:     0px 0.3em 0em 0em;
+    text-color: @fg;
+}
+
+/*removes the text input line*/
+mainbox {
+  children: [listview];
+}
