@@ -1,79 +1,108 @@
-; SWAY
-; CREDITS TO https://github.com/viandoxdev/edots
-
 (deflisten sway-workspaces
-  :initial '[{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false}]'
-  ; jq magic
-  `while true; do swaymsg -t subscribe '["workspace"]' >/dev/null && swaymsg -t get_workspaces -r | jq '[.[] | {name: .name | tonumber, focused, used: true}] + [range(1;9) | {name:., focused: false, used: false}   ] | unique_by(.name) | sort_by(.name) | [.[] | {focused, used}]' -cM; done`)
-
-(defvar sidebar-revealed "false")
-
-(defwindow sidebar
-           :monitor 0
-           :geometry (geometry :x "0%"
-                               :y "0%"
-                               :width "300px"
-                               :height "100%"
-                               ; :anchor "center left")
-           :stacking "overlay"
-           :exclusive false
-  (box :orientation "h"
-    :class "bar_parent"
-    :space-evenly "false"
-    (eventbox
-      (revealer :reveal sidebar-revealed
-        :transition "slideright"
-        :duration "250ms"
-        (box :class "bar_reveal"
-          (box :class "bar"
-            :orientation "v"
-            :space-evenly "false"
-
-            (box :orientation "v" ; footer
-              :class "footer"
-              :valign "end"
-              :space-evenly "false"
-              (space)
-              (box :class "sway"
-                :space-evenly false
-                (workspace :index "0")
-                (workspace :index "1")
-                (workspace :index "2")
-                (workspace :index "3")
-                (workspace :index "4")
-                (workspace :index "5")
-                (workspace :index "6")
-                (workspace :index "7")
-              )
-              (space)
-            )
-          )
-        )
-      )
-    )
-    (box :class "shadow")
+  :initial '[
+            {"num":1,"visible":false,"focused":false,"output":""},
+            {"num":2,"visible":false,"focused":false,"output":""},
+            {"num":3,"visible":false,"focused":false,"output":""},
+            {"num":4,"visible":false,"focused":false,"output":""},
+            {"num":5,"visible":false,"focused":false,"output":""},
+            {"num":6,"visible":false,"focused":false,"output":""},
+            {"num":7,"visible":false,"focused":false,"output":""},
+            {"num":8,"visible":false,"focused":false,"output":""},
+            {"num":9,"visible":false,"focused":false,"output":""},
+            {"num":10,"visible":false,"focused":false,"output":""},
+            ]'
+  `while true; do swaymsg -t subscribe '["workspace"]' >/dev/null && swaymsg -t get_workspaces -r | jq '[.[] | {num: .num, visible: .visible, focused: .focused, output: .output}]' -c`
   )
+
+(defwidget bar []
+    (centerbox :orientation "h"
+        (workspaces)
+        (music)
+        (sidestuff)
+    )
 )
 
-(defwidget space []
-  (box :class "space"
-    :height 20))
+(defwidget metric [label value onchange]
+    (box :orientation "h"
+       :class "metric"
+       :space-evenly false
+        (box :class "label" label)
+        (label :text value )
+            (scale :min 0
+           :max 101
+           :active {onchange != ""}
+           :disabled {onchange = ""}
+           :value value
+           :onchange onchange) 
+    
+    )
+)
 
-(defwidget workspace [index]
-  (button :onclick "swaymsg workspace ${index + 1}"
-    :class "workspace ${sway-workspaces[index].focused ? "workspace-focused" : ""} ${sway-workspaces[index].used ? "" : "workspace-unused"}"))
+(defwidget sidestuff []
+    (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
+        (metric :label "Mixer 🔊 "
+                :value volume
+                :onchange "amixer -D pulse set Master {}%")
+        (metric :label "Ram  "
+                :value {EWW_RAM.used_mem_perc}
+                :onchange "")
+        (metric :label "Disk 💾 "
+                :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
+                :onchange "")
+        time
+    )
+)
 
-;
-(defwindow _keepalive
-           :monitor 0
-           :geometry (geometry :x "100%"
-                               :y "100%"
-                               :width "1px"
-                               :height "1px")
-           :stacking "bg"
-           :exclusive false
-  (revealer :reveal false
-    :transition "slideleft"
-    (box
-      {sway-workspaces}
-      )))
+(defwidget workspaces []
+  (box :class "workspaces"
+       :orientation "h"
+       :space-evenly true
+       :halign "start"
+       :spacing 10
+        (button :onclick "swaymsg workspace 1" 1)
+        (button :onclick "swaymsg workspace 1" 1)
+        (button :onclick "swaymsg workspace 1" 1)
+        (button :onclick "swaymsg workspace 1" 1)
+        (button :onclick "swaymsg workspace 1" 1)
+        (button :onclick "swaymsg workspace 1" 1)
+        (button :onclick "swaymsg workspace 1" 1)
+        (button :onclick "swaymsg workspace 1" 1)
+        (button :onclick "wmctrl -s 1" 2)
+        (button :onclick "wmctrl -s 2" 3)
+        (button :onclick "wmctrl -s 3" 4)
+        (button :onclick "wmctrl -s 4" 5)
+        (button :onclick "wmctrl -s 5" 6)
+        (button :onclick "wmctrl -s 6" 7)
+        (button :onclick "wmctrl -s 7" 8)
+        (button :onclick "wmctrl -s 8" 9)
+    )
+)
+
+
+(defwidget music []
+  (box :class "music"
+       :orientation "h"
+       :space-evenly false
+       :halign "center"
+    {music != "" ? "🎵${music}" : ""}))
+
+(deflisten music :initial ""
+  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true")
+
+(defpoll volume :interval "10s"
+  "scripts/getvol")
+
+(defpoll time :interval "10s"
+  "date '+%H:%M %b %d, %Y'")
+
+(defwindow bar
+  :monitor 0
+  :windowtype "dock"
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "100%"
+                      :height "10px"
+                      :anchor "top center")
+  :reserve (struts :side "top" :distance "4%")
+  (bar))
+

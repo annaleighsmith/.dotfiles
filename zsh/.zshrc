@@ -22,6 +22,7 @@ source $ZSH/oh-my-zsh.sh
 # ------------------------------>
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$HOME/.local/bin
 
 # other variables
 # ------------------------------>

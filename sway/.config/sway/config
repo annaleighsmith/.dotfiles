@@ -20,11 +20,11 @@ set $term kitty
 set $menu wofi --show run
 # set $menu dmenu_path | wmenu | xargs swaymsg exec --
 output * bg ~/wallpapers/archlinux.png fill
-# output HDMI-A-1 bg ~/wallpapers/archlinux.png fill
-# bar {
-#   swaybar_command waybar
-# }
-#
+
+bar {
+  swaybar_command waybar
+}
+
 set $color #232a2d
 
 # borders color
@@ -35,9 +35,8 @@ client.urgent $color $color $color
 
 font pango:Fira Sans 11
 
-gaps inner 5
+gaps inner 8
 gaps outer 8
-gaps top 40
 default_border pixel 
 hide_edge_borders both
 
@@ -47,7 +46,7 @@ floating_modifier $mod normal
 bindsym $mod+Return exec $term
 bindsym $mod+q kill
 bindsym $mod+d exec $menu
-bindsym $mod+F2 exec ~/.config/eww/scripts/toggle.sh
+# bindsym $mod+F2 exec ~/.config/eww/scripts/toggle.sh
 bindsym $mod+Shift+r reload
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Do you really want to exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
 
@@ -125,4 +124,4 @@ bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 include @sysconfdir@/sway/config.d/*
-exec eww daemon
+# exec eww daemon
