@@ -18,7 +18,8 @@ gaps outer 8
 # default_border normal
 # title_align center
 
-new_window pixel 1
+
+default_border normal 
 hide_edge_borders both
 
 # =============================>

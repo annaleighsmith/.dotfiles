@@ -1,0 +1,79 @@
+; SWAY
+; CREDITS TO https://github.com/viandoxdev/edots
+
+(deflisten sway-workspaces
+  :initial '[{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false},{"focused":false,"used":false}]'
+  ; jq magic
+  `while true; do swaymsg -t subscribe '["workspace"]' >/dev/null && swaymsg -t get_workspaces -r | jq '[.[] | {name: .name | tonumber, focused, used: true}] + [range(1;9) | {name:., focused: false, used: false}   ] | unique_by(.name) | sort_by(.name) | [.[] | {focused, used}]' -cM; done`)
+
+(defvar sidebar-revealed "false")
+
+(defwindow sidebar
+           :monitor 0
+           :geometry (geometry :x "0%"
+                               :y "0%"
+                               :width "300px"
+                               :height "100%"
+                               ; :anchor "center left")
+           :stacking "overlay"
+           :exclusive false
+  (box :orientation "h"
+    :class "bar_parent"
+    :space-evenly "false"
+    (eventbox
+      (revealer :reveal sidebar-revealed
+        :transition "slideright"
+        :duration "250ms"
+        (box :class "bar_reveal"
+          (box :class "bar"
+            :orientation "v"
+            :space-evenly "false"
+
+            (box :orientation "v" ; footer
+              :class "footer"
+              :valign "end"
+              :space-evenly "false"
+              (space)
+              (box :class "sway"
+                :space-evenly false
+                (workspace :index "0")
+                (workspace :index "1")
+                (workspace :index "2")
+                (workspace :index "3")
+                (workspace :index "4")
+                (workspace :index "5")
+                (workspace :index "6")
+                (workspace :index "7")
+              )
+              (space)
+            )
+          )
+        )
+      )
+    )
+    (box :class "shadow")
+  )
+)
+
+(defwidget space []
+  (box :class "space"
+    :height 20))
+
+(defwidget workspace [index]
+  (button :onclick "swaymsg workspace ${index + 1}"
+    :class "workspace ${sway-workspaces[index].focused ? "workspace-focused" : ""} ${sway-workspaces[index].used ? "" : "workspace-unused"}"))
+
+;
+(defwindow _keepalive
+           :monitor 0
+           :geometry (geometry :x "100%"
+                               :y "100%"
+                               :width "1px"
+                               :height "1px")
+           :stacking "bg"
+           :exclusive false
+  (revealer :reveal false
+    :transition "slideleft"
+    (box
+      {sway-workspaces}
+      )))
