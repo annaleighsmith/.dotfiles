@@ -13,7 +13,8 @@ $character\
 
 [directory]
 read_only = ''
-format = ' $path $read_only '
+format = ' $path($style)$read_only($read_only_style)'
+truncation_length = 4
 
 [character]
 success_symbol = '[ \$](bold green)'

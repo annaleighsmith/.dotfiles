@@ -1,0 +1,186 @@
+;; **
+;; ** Widgets config for EWW
+;; ** Created by : @adi1090x
+;; **
+
+;; ** Variables ***********************************************************************
+
+;; Time vars
+(defpoll TIME :interval "30s" `date +\"%I:%M %p\"`)
+(defpoll DATE :interval "60s" `date +\"%A, %B %d\"`)
+
+;; Volume vars
+(defpoll VOLICON :interval "1s" `scripts/volume --icon`)
+(defpoll VOLUME :interval "1s" `scripts/volume --get`)
+
+;; Network
+(defpoll WIFIICON :interval "10s" `scripts/check-network --icon`)
+(defpoll NETSTAT :interval "10s" `scripts/check-network --stat`)
+
+
+(defpoll BLUETOOTH :interval "1s" "scripts/bluetooth")
+;; ** Widgets *************************************************************************
+				  ;       (button 
+				  ;         ; :onclick "${EWW_CMD} open --toggle calendar"
+				  ;         (label 
+				  ;           :text "hi" 
+				  ;         )
+				  ;       )
+				  ;     )
+;; apps
+(defwidget appwidget [] 
+  (box 
+    :class "dockbox"
+    (box 
+      :orientation "h" 
+      :spacing 15 
+      :valign "center" 
+      :halign "center" 
+      :space-evenly "false" 
+      :vexpand "false" 
+      :hexpand "false"
+
+      (button 
+              :style "background-image: url('images/launchpad.svg');" 
+              :class "appicon" 
+              :onclick "scripts/widget_apps --wf")
+      (button :style "background-image: url('images/apps/kitty.svg');" 
+              :class "appicon" 
+              :onclick "scripts/widget_apps --tr")
+      (button :style "background-image: url('images/apps/firefox.svg');" 
+              :class "appicon" 
+              :onclick "scripts/widget_apps --ff")
+      (button :style "background-image: url('images/apps/files.svg');" 
+              :class "appicon" 
+              :onclick "scripts/widget_apps --fm")
+      (button :style "background-image: url('images/apps/obsidian.svg');" 
+              :class "appicon" 
+              :onclick "scripts/widget_apps --ob")
+      (button :style "background-image: url('images/apps/discord.svg');" 
+              :class "appicon" 
+              :onclick "scripts/widget_apps --dc")
+      (button :style "background-image: url('images/apps/neochat.svg');" 
+              :class "appicon" 
+              :onclick "scripts/widget_apps --rd")
+      
+    )
+  )
+)
+
+;; weather
+(defwidget timewidget []
+		(box :class "dockbox"
+			(box :class "clockbox" :orientation "v" :spacing 0 :valign "center" :halign "start" :space-evenly "false" :vexpand "false" :hexpand "false"
+				(label :class "time" :halign "start" :wrap "true" :limit-width 25 :text TIME)
+				(label :class "date" :halign "start" :wrap "true" :limit-width 25 :text DATE)
+
+      )
+    )
+)
+
+(defwidget bluetoothwidget []
+  (icon-module :class "dockbox"
+               :icon "ᛒ"
+               :visible true
+    (literal :content {BLUETOOTH})))
+;; system
+(defwidget systemwidget [] 
+		(box :class "dockbox"
+			(box :orientation "h" 
+           :spacing 16 
+           :valign "center" 
+           :halign "center" 
+           :space-evenly "false" 
+           :vexpand "false" 
+           :hexpand "false"
+				(button :onclick "scripts/volume --toggle"
+					(box 
+            :orientation "h" 
+            :spacing 8 
+            :valign "center" 
+            :halign "center" 
+            :space-evenly "false" 
+            :vexpand "false" 
+            :hexpand "false"
+						(box 
+              :style "background-image: url('${VOLICON}');" 
+              :class "trayicon")
+							(label :class "infotext" :halign "start" :text VOLUME)
+          )
+        )
+				(button :onclick "scripts/widget_apps --tr"
+					(box 
+            :orientation "h" 
+            :spacing 8 
+            :valign "center" 
+            :halign "center" 
+            :space-evenly "false" 
+            :vexpand "false" 
+            :hexpand "false"
+						(box :style "background-image: url('${WIFIICON}');" 
+                 :class "trayicon")
+							(label :class "infotext" :halign "start" :text NETSTAT)
+          )
+        ) 
+     		(button 
+					(box 
+            :orientation "h" 
+            :spacing 8 
+            :valign "center" 
+            :halign "center" 
+            :space-evenly "false" 
+            :vexpand "false" 
+            :hexpand "false"
+						(box :style "background-image: url('images/system/bluetooth.svg');" 
+                 :class "trayicon")
+							(label :class "infotext" :halign "start" :text BLUETOOTH)
+          )
+        ) 
+      )
+    ) ;dockbox end
+)
+
+;; ** Windows *************************************************************************
+;; center of screen 960
+;; required space for each
+;; apps 380
+;; time 160
+;; system 220 
+;; search 
+;; apps
+
+(defwindow timewindow 
+           :monitor 1
+           :geometry (geometry :x "20px"
+                               :y "20px"
+                               :width "160px"
+                               :height "60px"
+                               :anchor "top left")
+           :stacking "bottom"
+           :reserve (struts :distance "80px" :side "top")
+
+            (timewidget)
+          
+)
+
+(defwindow systemwindow
+           :monitor 1
+           :geometry (geometry :x "200px"
+                               :y "20px"
+                               :width "340px"
+                               :height "60px"
+                               :anchor "top left")
+           :stacking "bottom"
+(systemwidget))
+
+(defwindow appwindow
+           :monitor 1
+           :geometry (geometry :x "560px"
+                               :y "20px"
+                               :width "380px" ; 50*6 + struts distance?
+                               :height "60px"
+                               :anchor "top left")
+           :stacking "bottom"
+(appwidget))
+
+
