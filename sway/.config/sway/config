@@ -6,28 +6,60 @@
 #  ███████║╚███╔███╔╝██║  ██║   ██║   
 #  ╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝   
 #                                     
-
+# moving to wayland 
 exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
+xwayland enable
+exec --no-startup-id /usr/lib/xdg-desktop-portal -r
+# https://github.com/nwg-piotr/autotiling
+exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr -r
 exec --no-startup-id autotiling
+
+# setting wallpaper, requires swaybg
+output * bg ~/wallpapers/archlinux.png fill
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+# setting some variables
 set $mod Mod4
-mouse_warping container 
+
 set $left h
 set $down j
 set $up k
 set $right l
 
 set $term kitty
-set $menu wofi --show run
-# set $menu dmenu_path | wmenu | xargs swaymsg exec --
-output * bg ~/wallpapers/archlinux.png fill
+set $menu wofi drun --hide-scroll | xargs swaymsg exec --
+set $ewwtoggle toggle_bar
 
+# notification daemon
+# https://github.com/dunst-project/dunst
+exec dunst &
+exec_always notify-send "Welcome back $USER!" -i  /home/anna/cloned/Nordzy-icon/src/status/24/messenger-notification.svg
+
+# eww startup
+exec eww daemon
+
+# toggle_bar works on eww overlay bar
+# triggered by $mod+w or the button on waybar
+# toggle_bar is symlinked to /usr/local/bin/
 bar {
   swaybar_command waybar
 }
+bindsym $mod+w exec $ewwtoggle
 
+# because the mouse was annoying me
+mouse_warping container 
+
+# screenshots
+bindsym Print exec grimshot --notify save area
+
+# idle 
+exec swayidle -w \
+  timeout 300 'swaylock -f -c 000000' \
+  timeout 600 'swaymsg "output * dpms off"' \
+  resume 'swaymsg "output * dpms on"' \
+  before-sleep 'swaylock -f -c 000000'
+
+# borders be gone!
 set $color #232a2d
-
-# borders color
 client.focused $color $color $color $color $color
 client.unfocused $color $color $color
 client.focused_inactive $color $color $color
@@ -35,21 +67,20 @@ client.urgent $color $color $color
 
 font pango:Fira Sans 11
 
+# gaps for unixporn
 gaps inner 8
 gaps outer 8
 default_border pixel 
 hide_edge_borders both
 
-floating_modifier $mod normal
 
 # KEYBINDINGS
+floating_modifier $mod normal
 bindsym $mod+Return exec $term
 bindsym $mod+q kill
 bindsym $mod+d exec $menu
-# bindsym $mod+F2 exec ~/.config/eww/scripts/toggle.sh
 bindsym $mod+Shift+r reload
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Do you really want to exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
-
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
 bindsym $mod+$up focus up
@@ -122,7 +153,6 @@ bindsym $mod+r mode "resize"
     bindsym $mod+b splith
     bindsym $mod+v splitv
     bindsym $mod+s layout stacking
-    bindsym $mod+w layout tabbed
     bindsym $mod+e layout toggle split
     bindsym $mod+f fullscreen
     bindsym $mod+Shift+space floating toggle

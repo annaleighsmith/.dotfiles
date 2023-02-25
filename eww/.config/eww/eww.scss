@@ -1,4 +1,22 @@
 /** Global *******************************************/
+
+$nord0:   #2e3440;
+$nord1:   #3b4252;
+$nord2:   #434c5e;
+$nord3:   #4c566a;
+$nord4:   #d8dee9;
+$nord5:   #e5e9f0;
+$nord6:   #eceff4;
+$nord7:   #8fbcbb;
+$nord8:   #88c0d0;
+$nord9:   #81a1c1;
+$nord10:  #5e81ac;
+$nord11:  #bf616a;
+$nord12:  #d08770;
+$nord13:  #ebcb8b;
+$nord14:  #a3be8c;
+$nord15:  #b48ead;
+
 *{
 	all: unset;
 	font-family: feather;
@@ -8,16 +26,11 @@
 
 /** Bar ***********************************/
 .dockbox {
-	background-color: #2e3440;
+  background: radial-gradient(circle at 50% 50%,$nord3,$nord1 );
+  background-color: $nord0;
 	border-radius: 12px;
-}
-
-/** Icons ***********************************/
-.genicon {
-  background-repeat: no-repeat;
-	background-size: 20px;
-	min-height: 20px;
-	min-width: 20px;
+  border: 1px solid $nord7;
+  opacity: 0.95;
 }
 
 .appicon {
@@ -27,18 +40,6 @@
 	min-width: 40px;
 }
 
-.workspace {
-	background-color: #C04364;
-// color: #2e3440;
-	border: 2px solid #2e3440;
-	border-radius: 16px;
-	font-size : 14px;
-	padding: 0px 6px 0px 6px;
-	margin: -2px 0px 0px 0px;
-	font-weight : bold;
-}
-
-/** Clock ********************************************/
 .clockbox {
 	margin : 0px 0px 0px 15px;
 }
@@ -49,11 +50,9 @@
 }
 
 .date {
-	font-size : 12px;
-	font-weight : bold;
+	font-size : 11px;
+	// font-weight : bold;
 }
-
-
 
 /** System *************************************************/
 .trayicon {
@@ -65,8 +64,7 @@
 }
 
 .infotext {
-  color: #e5e9f0;
-	background-color: #4c566a;
+  color: $nord4;
 	border-radius: 16px;
 	font-size : 14px;
 	padding: 0px 5px 0px 5px;

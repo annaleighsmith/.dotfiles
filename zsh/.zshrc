@@ -15,7 +15,7 @@ bash pfetch
 # ------------------------------>
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""
-# ZSH_THEME="eastwood"
+ZSH_THEME="eastwood"
 source $ZSH/oh-my-zsh.sh
 
 # path variables
@@ -23,7 +23,8 @@ source $ZSH/oh-my-zsh.sh
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/.local/bin
-
+export GRIM_DEFAULT_DIR=$HOME/screenshots/
+export XDG_CURRENT_DESKTOP="sway"
 # other variables
 # ------------------------------>
 export LANG=en_US.UTF-8
@@ -91,4 +92,5 @@ unset __conda_setup
 
 # startship
 # ------------------------------>
-eval "$(starship init zsh)"
+# starship is bloat?
+# eval "$(starship init zsh)"

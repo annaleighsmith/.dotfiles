@@ -1,1 +1,30 @@
-/usr/bin/toggle_bar
+#!/bin/bash
+
+EWW=`which eww`
+
+# function to open widgets 
+open_eww() {
+	${EWW} open-many \
+		   searchwindow \
+		   appwindow \
+		   timewindow \
+		   systemwindow
+}
+## Run eww daemon if not running already
+if [[ ! `pidof eww` ]]; then
+  ${EWW} daemon
+	sleep 1
+  echo "eww daemon started"
+fi
+
+
+WINDOWCOUNT=`eww windows | grep '\*' -c`
+if [[ $WINDOWCOUNT > 0 ]]; then
+  ${EWW} close-all
+else
+ open_eww
+fi
+
+
+
+

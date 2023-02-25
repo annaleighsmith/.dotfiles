@@ -153,24 +153,22 @@
            :monitor 1
            :geometry (geometry :x "20px"
                                :y "20px"
-                               :width "160px"
+                               :width "180px"
                                :height "60px"
                                :anchor "top left")
-           :stacking "bottom"
-           :reserve (struts :distance "80px" :side "top")
-
+           :stacking "overlay"
             (timewidget)
           
 )
 
 (defwindow systemwindow
            :monitor 1
-           :geometry (geometry :x "200px"
+           :geometry (geometry :x "220px"
                                :y "20px"
-                               :width "340px"
+                               :width "320px"
                                :height "60px"
                                :anchor "top left")
-           :stacking "bottom"
+           :stacking "overlay"
 (systemwidget))
 
 (defwindow appwindow
@@ -180,7 +178,7 @@
                                :width "380px" ; 50*6 + struts distance?
                                :height "60px"
                                :anchor "top left")
-           :stacking "bottom"
+           :stacking "overlay"
 (appwidget))
 
 
