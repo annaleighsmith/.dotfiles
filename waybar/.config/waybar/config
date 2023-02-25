@@ -1,0 +1,48 @@
+// dont be annoyed, just type set ft=jsonc 
+[
+  // LEFT BAR ==============================> 
+  {
+    "layer": "top",
+    "output": "!HDMI-A-1",
+    "include": [
+      "~/.config/waybar/default-modules.jsonc"
+    ],
+    "position": "top",
+    "height": 20,
+    "spacing": 0,
+    "modules-right": [
+      "sway/workspaces"
+    ],
+    "sway/workspaces": {
+      "disable-scroll": true,
+      "all-outputs": false,
+      "format": "{name}"
+    }
+  },
+  // RIGHT BAR ==============================> 
+  {
+    "layer": "top",
+    "output": "HDMI-A-1",
+    "include": [
+      "~/.config/waybar/default-modules.jsonc"
+    ],
+    "position": "top",
+    "height": 20,
+    "spacing": 0,
+    "modules-left": [
+      "sway/workspaces"
+    ],
+    "modules-center": [
+      "custom/eww"
+    ],
+    /* "modules-right": [ */
+    /*   "bluetooth", */
+    /*   "network" */
+    /* ], */
+    "sway/workspaces": {
+      "disable-scroll": true,
+      "all-outputs": false,
+      "format": "{name}"
+    }
+  }
+]

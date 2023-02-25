@@ -1,0 +1,36 @@
+{
+  "clock": {
+    // "tooltip-format": "{:%B %Y}<tt><small>{calendar}</small></tt>",
+    "format": "{:%b %d, %Y %I:%M }",
+    "format-alt": "{:%b %d, %Y %I:%M }",
+    "interval": 30
+  },
+  "bluetooth": {
+    "controller": "Archy", // specify the alias of the controller if there are more than 1 on the system
+    "format": " ",
+    "format-disabled": "", // an empty format will hide the module
+    "format-connected": "<span font='13' rise='-4000'> </span>",
+    "tooltip-format": "{controller_alias} Devices:\t{controller_address}",
+    "tooltip-format-connected": "{controller_alias}\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "\t{device_alias}"
+  },
+  "custom/eww": {
+    "format": "<span font='16' rise='-4000'> </span>",
+    "on-click": "toggle_bar",
+    "tooltip": false
+  },
+  // 󰢼 󰢽 󰢾 󰈀 󰈂
+  "network": {
+    "interface": "enp6s0",
+    "interval": 3,
+    "format": "{ifname}",
+    // "format-wifi": "{ifname}{essid} ({signalStrength}%) ",
+    "format-ethernet": "<span font='25' rise='-4000'>󰈀 </span> ",
+    "format-disconnected": "disconnected 󰈂",
+    "tooltip-format": "{ifname}",
+    // "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+    "tooltip-format-ethernet": " {bandwidthTotalBytes}\n󰕒 {bandwidthUpBytes}\n󰇚 {bandwidthDownBytes}",
+    // "tooltip-format-disconnected": "󰈂",
+    "max-length": 50
+  }
+}
