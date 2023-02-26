@@ -8,7 +8,14 @@
 -- vim.keymap.set("v", "<Right>", "", { desc = "Disable Right in Visual" })
 -- vim.keymap.set("v", "<Down>,", "", { desc = "Disable Down in Visual" })
 --
--- vim.keymap.set("n", "<Up>", "", { desc = "Disable Up in Normal" })
--- vim.keymap.set("n", "<Left>", "", { desc = "Disable Left in Normal" })
--- vim.keymap.set("n", "<Right>", "", { desc = "Disable Right in Normal" })
--- vim.keymap.set("n", "<Down>,", "", { desc = "Disable Down in Normal" })
+vim.keymap.set("n", "<Up>", "", { desc = "Disable Up in Normal" })
+vim.keymap.set("n", "<Left>", "", { desc = "Disable Left in Normal" })
+vim.keymap.set("n", "<Right>", "", { desc = "Disable Right in Normal" })
+vim.keymap.set("n", "<Down>,", "", { desc = "Disable Down in Normal" })
+
+if vim.fn.executable("btop") == 1 then
+  -- btop
+  vim.keymap.set("n", "<leader>xb", function()
+    require("lazyvim.util").float_term({ "btop" })
+  end, { desc = "btop" })
+end

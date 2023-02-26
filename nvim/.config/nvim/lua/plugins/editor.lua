@@ -1,3 +1,4 @@
+local Util = require("lazyvim.util")
 return {
   -- trying this out
   -- disable mini.bufremove
@@ -26,64 +27,57 @@ return {
       })
     end,
     keys = {
-      { "<leader>bd", "<CMD>Bdelete<CR>", desc = "Delete Buffer" },
-      { "<leader>bD", "<CMD>Bdelete!<CR>", desc = "Delete Buffer (Force)" },
+      { "<leader>bd", "<CMD>Bdelete<CR>", desc = "delete buffer" },
+      { "<leader>bD", "<CMD>Bdelete!<CR>", desc = "delete buffer (force)" },
     },
   },
   -- file explorer
+  { "nvim-neo-tree/neo-tree.nvim", enabled = false },
   {
-    "nvim-neo-tree/neo-tree.nvim",
-    opts = {
-      close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
-      filesystem = {
-        bind_to_cwd = false,
-        follow_current_file = true,
-        group_empty_dirs = true,
-        hijack_netrw_behavior = "open_default", -- netrw disabled, opening a directory opens neo-tree
-      },
-      window = {
-        mappings = {
-          ["<space>"] = "none",
-        },
-      },
-    },
+    "ms-jpq/chadtree",
   },
+  -- {
+  --   "nvim-neo-tree/neo-tree.nvim",
+  --   cmd = "Neotree",
+  --   keys = {
+  --     opts = {
+  --       close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
+  --       filesystem = {
+  --         bind_to_cwd = false,
+  --         follow_current_file = true,
+  --         group_empty_dirs = true,
+  --         hijack_netrw_behavior = "open_default", -- netrw disabled, opening a directory opens neo-tree
+  --       },
+  --     },
+  --     window = {
+  --       mappings = {
+  --         ["<space>"] = "none",
+  --       },
+  --     },
+  --   },
+  -- },
   -- TELESCOPE!
   {
     "nvim-telescope/telescope.nvim",
+    cmd = "Telescope",
     dependencies = {
       { "nvim-telescope/telescope-dap.nvim" },
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
       { "nvim-telescope/telescope-project.nvim" },
       { "debugloop/telescope-undo.nvim" },
     },
-    -- opts = {
-    --   defaults = {
-    --     prompt_prefix = " ",
-    --     selection_caret = " ",
-    --     layout_strategy = "flex",
-    --     layout_config = {
-    --       width = 0.8,
-    --       height = 0.8,
-    --       prompt_position = "top",
-    --     },
-    --     sorting_strategy = "ascending",
-    --     winblend = 10,
-    --   },
-    -- },
     opts = {
       defaults = {
         prompt_prefix = " ",
         selection_caret = " ",
-        layout_strategy = "vertical",
+        layout_strategy = "flex",
         layout_config = {
-          vertical = {
-            preview_cutoff = 0.2,
-            preview_height = 0.4,
-          },
-          height = 0.9,
-          width = 0.9,
+          width = 0.8,
+          height = 0.8,
+          prompt_position = "top",
         },
+        sorting_strategy = "ascending",
+        winblend = 10,
         mappings = {
           i = {
             ["<C-j>"] = function(...)
@@ -131,20 +125,12 @@ return {
         },
       },
     },
-    -- keys = {
-    --   {
-    --     "<leader>fp",
-    --     function()
-    --       require("telescope.builtin").find_files({ cwd = require("lazy.core.config").options.root })
-    --     end,
-    --     desc = "Find Plugin File",
-    --   },
-    -- },
+
     keys = {
       {
         "<leader>fp",
         "<CMD>Telescope project display_type=full<CR>",
-        desc = "Find project",
+        desc = "find project",
       },
     },
     config = function(_, opts)
@@ -171,6 +157,11 @@ return {
   {
     "f-person/git-blame.nvim",
     event = "BufReadPre",
+    config = function()
+      vim.g.gitblame_enabled = 0
+      vim.g.gitblame_message_template = "  <author>  <date>  <summary>"
+      vim.g.gitblame_date_format = "%b %d %Y"
+    end,
   },
 
   -- git conflict

@@ -46,7 +46,7 @@ return {
           },
           disable = {
             background = false, -- Disable setting the background color
-            cursorline = false, -- Disable the cursorline
+            cursorline = true, -- Disable the cursorline
             eob_lines = true, -- Hide the end-of-buffer lines
           },
           -- Inverse highlight for different groups
