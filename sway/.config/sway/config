@@ -1,33 +1,55 @@
-#                                     
+#
 #  ███████╗██╗    ██╗ █████╗ ██╗   ██╗
 #  ██╔════╝██║    ██║██╔══██╗╚██╗ ██╔╝
-#  ███████╗██║ █╗ ██║███████║ ╚████╔╝ 
-#  ╚════██║██║███╗██║██╔══██║  ╚██╔╝  
-#  ███████║╚███╔███╔╝██║  ██║   ██║   
-#  ╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝   
-#                                     
-# moving to wayland 
+#  ███████╗██║ █╗ ██║███████║ ╚████╔╝
+#  ╚════██║██║███╗██║██╔══██║  ╚██╔╝
+#  ███████║╚███╔███╔╝██║  ██║   ██║
+#  ╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝
+#
+
+
+# get things setup for wayland and sway
 exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
 xwayland enable
 exec --no-startup-id /usr/lib/xdg-desktop-portal -r
-# https://github.com/nwg-piotr/autotiling
 exec --no-startup-id /usr/lib/xdg-desktop-portal-wlr -r
+
+# autotiling for sway
+# https://github.com/nwg-piotr/autotiling
 exec --no-startup-id autotiling
 
+# screen layout
+output DP-1 pos 0 0 res 1920x1080
+output HDMI-A-1 pos 1920 0 res 1920x1080
+
 # setting wallpaper, requires swaybg
-output * bg ~/wallpapers/archlinux.png fill
+output * bg ~/wallpapers/SchoolAthens.png fill
+
+# polkit
 exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+
 # setting some variables
 set $mod Mod4
-
 set $left h
 set $down j
 set $up k
 set $right l
-
 set $term kitty
 set $menu wofi drun --hide-scroll | xargs swaymsg exec --
 set $ewwtoggle toggle_bar
+
+# window rules
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [instance="update_installer"] floating enable
+
+# for_window [title="ATLauncher Console"] floating enable
+# for_window [title="ATLauncher"] floating enable
+# for_window [title="ATLauncher Console"] move position center
 
 # notification daemon
 # https://github.com/dunst-project/dunst
@@ -46,17 +68,20 @@ bar {
 bindsym $mod+w exec $ewwtoggle
 
 # because the mouse was annoying me
-mouse_warping container 
+mouse_warping container
 
 # screenshots
-bindsym Print exec grimshot --notify save area
 
-# idle 
-exec swayidle -w \
-  timeout 300 'swaylock -f -c 000000' \
-  timeout 600 'swaymsg "output * dpms off"' \
-  resume 'swaymsg "output * dpms on"' \
-  before-sleep 'swaylock -f -c 000000'
+# idle
+# exec swayidle -w \
+#   timeout 1200 'swaylock -f -c 000000' \
+#   timeout 2400 'swaymsg "output * dpms off"' \
+#   resume 'swaymsg "output * dpms on"' \
+#   before-sleep 'swaylock -f -c 000000'
+
+bindsym Print exec grimshot --notify save area
+bindsym $mod+Shift+e exec /home/anna/.config/sway/scripts/wofi-power.sh
+# bindsym $mod+Shift+e exec swaynag -t warning -m 'Do you really want to exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
 
 # borders be gone!
 set $color #232a2d
@@ -70,17 +95,16 @@ font pango:Fira Sans 11
 # gaps for unixporn
 gaps inner 8
 gaps outer 8
-default_border pixel 
+default_border pixel
 hide_edge_borders both
 
 
 # KEYBINDINGS
 floating_modifier $mod normal
-bindsym $mod+Return exec $term
 bindsym $mod+q kill
 bindsym $mod+d exec $menu
+bindsym $mod+Return exec $term
 bindsym $mod+Shift+r reload
-bindsym $mod+Shift+e exec swaynag -t warning -m 'Do you really want to exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
 bindsym $mod+$up focus up
@@ -147,7 +171,7 @@ mode "resize" {
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
-bindsym $mod+r mode "resize"       
+bindsym $mod+r mode "resize"
 
 # bindsym $mod+Shift+w split h, layout tabbed
     bindsym $mod+b splith

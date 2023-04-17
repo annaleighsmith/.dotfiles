@@ -4,17 +4,21 @@ return {
     "mfussenegger/nvim-dap",
     event = "VeryLazy",
     dependencies = {
-      {
-        "theHamsta/nvim-dap-virtual-text",
-        config = true,
-      },
+      { "rcarriga/nvim-dap-ui" },
+      { "theHamsta/nvim-dap-virtual-text" },
+      { "nvim-telescope/telescope-dap.nvim" },
+      { "jbyuki/one-small-step-for-vimkind" },
     },
     config = function()
-      vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "", linehl = "", numhl = "" })
-      vim.fn.sign_define("DapBreakpointCondition", { text = "", texthl = "", linehl = "", numhl = "" })
-      vim.fn.sign_define("DapBreakpointRejected", { text = "", texthl = "", linehl = "", numhl = "" })
-      vim.fn.sign_define("DapLogPoint", { text = "", texthl = "", linehl = "", numhl = "" })
-      vim.fn.sign_define("DapStopped", { text = "", texthl = "", linehl = "", numhl = "" })
+      require("nvim-dap-virtual-text").setup({
+        enabled = true,
+        commented = true,
+      })
+      -- vim.fn.sign_define("DapBreakpoint", { text = "", texthl = "", linehl = "", numhl = "" })
+      -- vim.fn.sign_define("DapBreakpointCondition", { text = "", texthl = "", linehl = "", numhl = "" })
+      -- vim.fn.sign_define("DapBreakpointRejected", { text = "", texthl = "", linehl = "", numhl = "" })
+      -- vim.fn.sign_define("DapLogPoint", { text = "", texthl = "", linehl = "", numhl = "" })
+      -- vim.fn.sign_define("DapStopped", { text = "", texthl = "", linehl = "", numhl = "" })
       require("dap").defaults.fallback.terminal_win_cmd = "enew | set filetype=dap-terminal"
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "dap-repl",

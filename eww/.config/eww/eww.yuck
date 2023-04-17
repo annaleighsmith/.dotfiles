@@ -20,49 +20,49 @@
 
 (defpoll BLUETOOTH :interval "1s" "scripts/bluetooth")
 ;; ** Widgets *************************************************************************
-				  ;       (button 
+				  ;       (button
 				  ;         ; :onclick "${EWW_CMD} open --toggle calendar"
-				  ;         (label 
-				  ;           :text "hi" 
+				  ;         (label
+				  ;           :text "hi"
 				  ;         )
 				  ;       )
 				  ;     )
 ;; apps
-(defwidget appwidget [] 
-  (box 
+(defwidget appwidget []
+  (box
     :class "dockbox"
-    (box 
-      :orientation "h" 
-      :spacing 15 
-      :valign "center" 
-      :halign "center" 
-      :space-evenly "false" 
-      :vexpand "false" 
+    (box
+      :orientation "h"
+      :spacing 15
+      :valign "center"
+      :halign "center"
+      :space-evenly "false"
+      :vexpand "false"
       :hexpand "false"
 
-      (button 
-              :style "background-image: url('images/launchpad.svg');" 
-              :class "appicon" 
+      (button
+              :style "background-image: url('images/launchpad.svg');"
+              :class "appicon"
               :onclick "scripts/widget_apps --wf")
-      (button :style "background-image: url('images/apps/kitty.svg');" 
-              :class "appicon" 
+      (button :style "background-image: url('images/apps/kitty.svg');"
+              :class "appicon"
               :onclick "scripts/widget_apps --tr")
-      (button :style "background-image: url('images/apps/firefox.svg');" 
-              :class "appicon" 
+      (button :style "background-image: url('images/apps/firefox.svg');"
+              :class "appicon"
               :onclick "scripts/widget_apps --ff")
-      (button :style "background-image: url('images/apps/files.svg');" 
-              :class "appicon" 
+      (button :style "background-image: url('images/apps/files.svg');"
+              :class "appicon"
               :onclick "scripts/widget_apps --fm")
-      (button :style "background-image: url('images/apps/obsidian.svg');" 
-              :class "appicon" 
+      (button :style "background-image: url('images/apps/obsidian.svg');"
+              :class "appicon"
               :onclick "scripts/widget_apps --ob")
-      (button :style "background-image: url('images/apps/discord.svg');" 
-              :class "appicon" 
+      (button :style "background-image: url('images/apps/discord.svg');"
+              :class "appicon"
               :onclick "scripts/widget_apps --dc")
-      (button :style "background-image: url('images/apps/neochat.svg');" 
-              :class "appicon" 
+      (button :style "background-image: url('images/apps/neochat.svg');"
+              :class "appicon"
               :onclick "scripts/widget_apps --rd")
-      
+
     )
   )
 )
@@ -84,58 +84,58 @@
                :visible true
     (literal :content {BLUETOOTH})))
 ;; system
-(defwidget systemwidget [] 
+(defwidget systemwidget []
 		(box :class "dockbox"
-			(box :orientation "h" 
-           :spacing 16 
-           :valign "center" 
-           :halign "center" 
-           :space-evenly "false" 
-           :vexpand "false" 
+			(box :orientation "h"
+           :spacing 16
+           :valign "center"
+           :halign "center"
+           :space-evenly "false"
+           :vexpand "false"
            :hexpand "false"
 				(button :onclick "scripts/volume --toggle"
-					(box 
-            :orientation "h" 
-            :spacing 8 
-            :valign "center" 
-            :halign "center" 
-            :space-evenly "false" 
-            :vexpand "false" 
+					(box
+            :orientation "h"
+            :spacing 8
+            :valign "center"
+            :halign "center"
+            :space-evenly "false"
+            :vexpand "false"
             :hexpand "false"
-						(box 
-              :style "background-image: url('${VOLICON}');" 
+						(box
+              :style "background-image: url('${VOLICON}');"
               :class "trayicon")
 							(label :class "infotext" :halign "start" :text VOLUME)
           )
         )
 				(button :onclick "scripts/widget_apps --tr"
-					(box 
-            :orientation "h" 
-            :spacing 8 
-            :valign "center" 
-            :halign "center" 
-            :space-evenly "false" 
-            :vexpand "false" 
+					(box
+            :orientation "h"
+            :spacing 8
+            :valign "center"
+            :halign "center"
+            :space-evenly "false"
+            :vexpand "false"
             :hexpand "false"
-						(box :style "background-image: url('${WIFIICON}');" 
+						(box :style "background-image: url('${WIFIICON}');"
                  :class "trayicon")
 							(label :class "infotext" :halign "start" :text NETSTAT)
           )
-        ) 
-     		(button 
-					(box 
-            :orientation "h" 
-            :spacing 8 
-            :valign "center" 
-            :halign "center" 
-            :space-evenly "false" 
-            :vexpand "false" 
+        )
+     		(button
+					(box
+            :orientation "h"
+            :spacing 8
+            :valign "center"
+            :halign "center"
+            :space-evenly "false"
+            :vexpand "false"
             :hexpand "false"
-						(box :style "background-image: url('images/system/bluetooth.svg');" 
+						(box :style "background-image: url('images/system/bluetooth.svg');"
                  :class "trayicon")
 							(label :class "infotext" :halign "start" :text BLUETOOTH)
           )
-        ) 
+        )
       )
     ) ;dockbox end
 )
@@ -145,11 +145,11 @@
 ;; required space for each
 ;; apps 380
 ;; time 160
-;; system 220 
-;; search 
+;; system 220
+;; search
 ;; apps
 
-(defwindow timewindow 
+(defwindow timewindow
            :monitor 1
            :geometry (geometry :x "20px"
                                :y "20px"
@@ -158,7 +158,7 @@
                                :anchor "top left")
            :stacking "overlay"
             (timewidget)
-          
+
 )
 
 (defwindow systemwindow
@@ -180,5 +180,3 @@
                                :anchor "top left")
            :stacking "overlay"
 (appwidget))
-
-

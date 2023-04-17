@@ -1,4 +1,3 @@
-local Util = require("lazyvim.util")
 return {
   -- trying this out
   -- disable mini.bufremove
@@ -32,10 +31,6 @@ return {
     },
   },
   -- file explorer
-  { "nvim-neo-tree/neo-tree.nvim", enabled = false },
-  {
-    "ms-jpq/chadtree",
-  },
   -- {
   --   "nvim-neo-tree/neo-tree.nvim",
   --   cmd = "Neotree",
@@ -154,15 +149,15 @@ return {
   },
 
   -- git blame
-  {
-    "f-person/git-blame.nvim",
-    event = "BufReadPre",
-    config = function()
-      vim.g.gitblame_enabled = 0
-      vim.g.gitblame_message_template = "  <author>  <date>  <summary>"
-      vim.g.gitblame_date_format = "%b %d %Y"
-    end,
-  },
+  -- {
+  --   "f-person/git-blame.nvim",
+  --   event = "BufReadPre",
+  --   config = function()
+  --     vim.g.gitblame_enabled = 0
+  --     vim.g.gitblame_message_template = "  <author>  <date>  <summary>"
+  --     vim.g.gitblame_date_format = "%b %d %Y"
+  --   end,
+  -- },
 
   -- git conflict
   {
