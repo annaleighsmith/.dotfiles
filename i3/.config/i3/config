@@ -30,7 +30,7 @@ exec_always --no-startup-id $HOME/.config/i3/autorun.sh
 # exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 # exec --no-startup-id nm-applet
 exec --no-startup-id picom -CGb
-
+exec polybar
 # =============================>
 # Audio
 # =============================>
@@ -52,7 +52,7 @@ workspace_layout default
 bindsym $mod+Return exec kitty
 bindsym $mod+q kill
 bindsym $mod+d exec --no-startup-id "rofi -show drun -theme /home/anna/.config/rofi/launchers/type-2/style-1.rasi"
-bindsym $mod+Shift+e exec ~/.config/polybar/scripts/powermenu
+# bindsym $mod+Shift+e exec ~/.config/polybar/scripts/powermenu
 
 # =============================>
 # General keybindings
@@ -163,7 +163,44 @@ mode "resize" {
         bindsym Escape mode "default"
         bindsym $mod+r mode "default"
 }
+# bar {
+#     status_command i3status
+#     position bottom
+#     tray_output DisplayPort-0
+#
+#     font pango: FiraCode NF 11
+#     separator_symbol "  "
+#     colors {
+#         background #2E3440
+#         statusline #ffffff
+#         separator #586e75
+#     }
+#
+# }
 
+#
+# bar {
+#    	height 25
+# 	position bottom
+#     font pango: FiraCode NF 12
+# 	status_command i3status
+#     tray_padding 4
+#     strip_workspace_numbers yes
+#
+#     colors {
+#             separator  #1f222d
+#             background #1f222d
+#             statusline #81a1c1
+#
+#             #                   border  background text
+#             focused_workspace  #1f222d #1f222d    #81a1c1
+#             active_workspace   #1f222d #252936    #5e81ac
+#             inactive_workspace #1f222d #1f222d    #4c566a
+#             urgent_workspace   #1f222d #1f222d    #ee829f
+#             binding_mode       #1f222d #81a1c1    #2e3440
+#     }
+# }
+bar {
+    i3bar_command /home/anna/.config/polybar/launch.sh
+  }
 bindsym $mod+r mode "resize"
-
-exec_always --no-startup-id $HOME/.config/polybar/launch.sh

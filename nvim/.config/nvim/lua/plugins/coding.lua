@@ -70,32 +70,32 @@ return {
       require("colorizer").setup()
     end,
   },
-  {
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    event = "InsertEnter",
-    config = function()
-      require("copilot").setup({
-        suggestion = { enabled = false },
-        panel = { enabled = false },
-      })
-    end,
-  },
-  {
-    "zbirenbaum/copilot-cmp",
-    dependencies = { "zbirenbaum/copilot.lua" },
-    event = "VeryLazy",
-    config = function()
-      require("copilot_cmp").setup({
-        method = "getCompletionCycling",
-        formatters = {
-          insert_text = require("copilot_cmp.format").remove_existing,
-          -- label = require("copilot_cmp.format").format_label_text,
-          -- preview = require("copilot_cmp.format").deindent,
-        },
-      })
-    end,
-  },
+  -- {
+  --   "zbirenbaum/copilot.lua",
+  --   cmd = "Copilot",
+  --   event = "InsertEnter",
+  --   config = function()
+  --     require("copilot").setup({
+  --       suggestion = { enabled = false },
+  --       panel = { enabled = false },
+  --     })
+  --   end,
+  -- },
+  -- {
+  --   "zbirenbaum/copilot-cmp",
+  --   dependencies = { "zbirenbaum/copilot.lua" },
+  --   event = "VeryLazy",
+  --   config = function()
+  --     require("copilot_cmp").setup({
+  --       method = "getCompletionCycling",
+  --       formatters = {
+  --         insert_text = require("copilot_cmp.format").remove_existing,
+  --         -- label = require("copilot_cmp.format").format_label_text,
+  --         -- preview = require("copilot_cmp.format").deindent,
+  --       },
+  --     })
+  --   end,
+  -- },
   -- {
   --   "nvim-cmp",
   --   opts = function(_, opts)

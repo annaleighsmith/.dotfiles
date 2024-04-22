@@ -48,13 +48,12 @@ nord12 = #d08770
 nord13 = #ebcb8b
 nord14 = #a3be8c
 nord15 = #b48ead
-[bar/bar1]
-; monitor = ${env:MONITOR:}
-monitor = HDMI-A-0
+[bar/example]
+monitor = ${env:MONITOR:}
 bottom = true
 width = 100%
 height = 24pt
-radius = 5
+radius = 6
 font-0 = "FiraCode Nerd Font Mono:weight=Regular;2"
 font-1 = "FiraCode Nerd Font Mono:weight=Bold:size=13;4"
 font-2 = "Noto Sans:size=11;1"
@@ -67,7 +66,6 @@ foreground = ${colors.foreground}
 
 line-size = 3pt
 
-
 border-size = 6pt
 border-color = #00000000
 
@@ -77,9 +75,9 @@ padding-right = 1
 module-margin = 1
 
 separator = |
-separator-foreground = ${colors.nord0}
+separator-foreground = ${colors.disabled}
 
-modules-left = i3 xwindow
+modules-left = xworkspaces xwindow
 modules-right = xkeyboard pulseaudio memory cpu temperature eth wlan date
 
 cursor-click = pointer
@@ -93,86 +91,10 @@ enable-ipc = true
 ; wm-restack = bspwm
 wm-restack = i3
 
-[bar/bar2]
-; monitor = ${env:MONITOR:}
-monitor = DisplayPort-0
-bottom = true
-width = 100%
-height = 24pt
-radius = 5
-font-0 = "FiraCode Nerd Font Mono:weight=Regular;2"
-font-1 = "FiraCode Nerd Font Mono:weight=Bold:size=13;4"
-font-2 = "Noto Sans:size=11;1"
-font-3 = "FiraCode Nerd Font Mono:weight=Regular:size=22;4"
-font-4 = "FiraCode Nerd Font Mono Light:weight=Regular:size=24;4"
-; dpi = 96
-
-background = ${colors.background}
-foreground = ${colors.foreground}
-
-line-size = 3pt
-
-border-size = 6pt
-border-color = #00000000
-
-
-padding-left = 0
-padding-right = 1
-
-module-margin = 1
-
-separator = |
-separator-foreground = ${colors.disabled}
-
-modules-left = i3 xwindow
-modules-right = xkeyboard temperature pulseaudio memory cpu eth wlan date
-
-cursor-click = pointer
-cursor-scroll = ns-resize
-
-enable-ipc = true
-
-; tray-position = right
-
-; wm-restack = generic
-; wm-restack = bspwm
-wm-restack = i3
 ; override-redirect = true
-
-
-
-[module/i3]
-type = internal/i3
-pin-workspaces = true
-strip-wsnumbers = false
-index-sort = true
-enable-click = true
-format = <label-state>
-label-mode = %mode%
-label-focused = %index%
-label-unfocused = %index%
-label-visible = %index%
-label-urgent = %index%
-
-label-focused-padding = 1
-label-unfocused-padding = 1
-label-visible-padding = 1
-label-urgent-padding = 1
-
-label-focused-foreground= ${colors.nord14}
-label-unfocused-foreground= ${colors.disabled}
-label-visible-foreground= ${colors.primary}
-
-label-focused-background = ${colors.nord1}
-label-unfocused-background = ${colors.background}
-label-visible-background = ${colors.background}
-
-label-focused-underline= ${colors.primary}
-
 [module/xworkspaces]
-
 type = internal/xworkspaces
-pin-workspaces = true
+pin-workspaces = false
 label-active = %name%
 label-active-background = ${colors.nord0}
 label-active-underline= ${colors.primary}
@@ -284,8 +206,8 @@ pseudo-transparency = true
 [module/temperature]
 type = internal/temperature
 ; seconds before update
-interval = 1
-hwmon-path = /sys/devices/platform/nct6775.656/hwmon/hwmon4/temp1_input
+interval = 10
+hwmon-path = /sys/devices/platform/nct6775.656/hwmon/hwmon4/temp2_input
 base-temperature = 40
 warn-temperature = 60
 units = true
