@@ -1,11 +1,14 @@
 return {
   {
+    "nvim-treesitter/nvim-treesitter-context",
+    enabled = false,
+  },
+  {
     "rcarriga/nvim-notify",
     opts = {
       stages = "fade_in_slide_out",
       timeout = 7000,
       render = "compact",
-      -- vim log levels are "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
       level = "ERROR",
       max_height = function()
         return math.floor(vim.o.lines * 0.75)
@@ -23,6 +26,15 @@ return {
 
       vim.keymap.set("n", "<leader>a", mark.add_file, { desc = "Mark file" })
       vim.keymap.set("n", "<leader>h", ui.toggle_quick_menu, { desc = "Harpoon Menu" })
+    end,
+  },
+  {
+    "ThePrimeagen/vim-apm",
+    init = function()
+      local apm = require("vim-apm")
+      vim.keymap.set("n", "<leader>apm", function()
+        apm:toggle_monitor()
+      end, { desc = "Toggle apm" })
     end,
   },
   {
@@ -184,12 +196,12 @@ return {
       opts.section.buttons.val = {
         dashboard.button("p", " " .. "Open project", "<cmd>Telescope project display_type=full<cr>"),
         dashboard.button("e", " " .. "New file", "<cmd>ene <BAR> startinsert<cr>"),
-        dashboard.button("f", " " .. "Find file", "<cmd>cd $HOME/Projects | Telescope find_files<cr>"),
+        dashboard.button("f", " " .. "Find file", "<cmd>Telescope find_files<cr>"),
         dashboard.button("r", " " .. "Recent files", "<CMD>Telescope oldfiles<cr>"),
         dashboard.button("s", "勒" .. "Restore Session", [[:lua require("persistence").load() <cr>]]),
         dashboard.button("g", " " .. "Find text", ":Telescope live_grep <CR>"),
-        dashboard.button("c", " " .. "Config", ":e $MYVIMRC | :cd %:p:h | Telescope file_browser<cr>"),
         dashboard.button("l", "鈴" .. "Lazy", "<cmd>Lazy<cr>"),
+        dashboard.button("x", " " .. "Lazy Extras", "<cmd>LazyExtras<cr>"),
         dashboard.button("m", " " .. "Mason", "<cmd>Mason<cr>"),
         dashboard.button("q", " " .. "Quit", "<cmd>qa<cr>"),
       }
@@ -221,6 +233,7 @@ return {
       winblend = 75,
     },
   },
+
   {
     "akinsho/toggleterm.nvim",
     cmd = {

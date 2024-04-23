@@ -83,8 +83,8 @@ return {
               local jdtls = require("jdtls")
               local jdtls_config = vim.tbl_deep_extend("force", opts, {
                 on_attach = function(client, buffer)
-                  require("lazyvim.plugins.lsp.format").on_attach(client, buffer)
-                  require("lazyvim.plugins.lsp.keymaps").on_attach(client, buffer)
+                  require("lazyvim.plugins.lsp.format").lsp.on_attach(client, buffer)
+                  require("lazyvim.plugins.lsp.keymaps").lsp.on_attach(client, buffer)
                   -- custom keymaps
                   vim.keymap.set("n", "<leader>co", function()
                     require("jdtls").organize_imports()
@@ -94,7 +94,6 @@ return {
                   end, { buffer = buffer, desc = "Run Test" })
                   require("jdtls").setup_dap({ hotcodereplace = "auto" })
                   require("jdtls.dap").setup_dap_main_class_configs()
-                  require("jdtls.setup").add_commands()
                 end,
                 cmd = {
                   jdtls_bin,

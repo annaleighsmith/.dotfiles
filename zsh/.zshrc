@@ -72,7 +72,6 @@ plugins=(git)
 unalias l
 unalias ll
 unalias la
-
 alias zshconfig="nvim ~/.zshrc"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
 alias cat="bat"

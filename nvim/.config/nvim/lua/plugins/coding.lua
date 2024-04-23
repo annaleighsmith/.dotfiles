@@ -29,14 +29,20 @@ return {
   --   "wakatime/vim-wakatime",
   --   event = "BufRead",
   -- },
+
   -- tidy
   {
     "mcauley-penney/tidy.nvim",
-    event = "VeryLazy",
-    config = {
+    opts = {
+      enabled_on_save = false,
       filetype_exclude = { "markdown", "diff" },
     },
+    init = function()
+      vim.keymap.set("n", "<leader>tt", require("tidy").toggle, { desc = "Tidy Toggle" })
+      vim.keymap.set("n", "<leader>tr", require("tidy").run, { desc = "Tidy Run" })
+    end,
   },
+
   -- editor config support
   {
     "editorconfig/editorconfig-vim",
