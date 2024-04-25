@@ -49,7 +49,7 @@ set $mod Mod4
 floating_modifier $mod
 workspace_layout default
 
-bindsym $mod+Return exec kitty
+bindsym $mod+Return exec alacritty 
 bindsym $mod+q kill
 bindsym $mod+d exec --no-startup-id "rofi -show drun -theme /home/anna/.config/rofi/launchers/type-2/style-1.rasi"
 # bindsym $mod+Shift+e exec ~/.config/polybar/scripts/powermenu

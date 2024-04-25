@@ -2,6 +2,8 @@
 
 CONFIGDIR="$HOME/.config/$1/"
 STOWDIR="$HOME/.dotfiles/$1/.config/"
+echo "CONFIGDIR: $CONFIGDIR"
+echo "STOWDIR: $STOWDIR"
 
 if [ -d "$CONFIGDIR" ] && [ ! -d "$STOWDIR" ] && [ ! -h "$CONFIGDIR" ]; then
   echo "easyStowing $1"
