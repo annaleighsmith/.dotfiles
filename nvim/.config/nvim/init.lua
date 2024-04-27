@@ -18,12 +18,14 @@ vim.opt.timeoutlen = 300
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.list = true
+vim.opt.colorcolumn = "80"
 -- vim.opt.listchars = { tab = "│─", trail = "·", nbsp = "‿" }
 vim.opt.inccommand = "split"
 vim.opt.cursorline = true
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 5
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
+vim.opt.cmdheight = 0
 
 -- [[ Basic Keymaps ]]
 vim.opt.hlsearch = true
@@ -31,11 +33,16 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
 -- TIP: Disable arrow keys in normal mode
-vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!!"<CR>')
-vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!!"<CR>')
+-- vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
+-- vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!!"<CR>')
+-- vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!!"<CR>')
+-- vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!!"<CR>')
 
+-- Set arrow keys to move between windows
+vim.keymap.set("n", "<left>", "<C-w><C-h>", { desc = "Move focus to left window" })
+vim.keymap.set("n", "<right>", "<C-w><C-l>", { desc = "Move focus to right window" })
+vim.keymap.set("n", "<up>", "<C-w><C-k>", { desc = "Move focus to upper window" })
+vim.keymap.set("n", "<down>", "<C-w><C-j>", { desc = "Move focus to lower window" })
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -91,67 +98,32 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
 	"tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
 	{ "numToStr/Comment.nvim", opts = {} },
-
-	{ -- Harpoon
-		"ThePrimeagen/harpoon",
-		lazy = true,
-		keys = {
-			{
-				"<leader>he",
-				function()
-					require("harpoon.ui").toggle_quick_menu()
-				end,
-				desc = "Edit marks... (harpoon)",
+	{ "ThePrimeagen/vim-be-good" },
+	{
+		"norcalli/nvim-colorizer.lua",
+		-- enable automatically
+		config = function()
+			require("colorizer").setup()
+		end,
+		opts = {},
+	},
+	{
+		"Bekaboo/deadcolumn.nvim",
+		opts = {
+			blending = {
+				threshold = 0.1,
+				colorcode = "#EBCB8B",
+				hlgroup = { "Normal", "bg" },
 			},
-			{
-				"<leader>hh",
-				"<cmd>Telescope harpoon marks<cr>",
-				desc = "Show marks... (harpoon)",
-			},
-			{
-				"<leader>hm",
-				function()
-					require("harpoon.mark").add_file()
-				end,
-				desc = "Mark this file (harpoon)",
+			warning = {
+				alpha = 0.4,
+				offset = 0,
+				colorcode = "#E06C75",
+				hlgroup = { "Error", "bg" },
 			},
 		},
-		config = function()
-			require("telescope").load_extension("harpoon")
-		end,
 	},
-	{
-		"rmehri01/onenord.nvim",
-		priority = 100,
-		init = function()
-			require("onenord").setup()
-		end,
-	},
-	-- Highlight todo, notes, etc in comments
-	{
-		"folke/todo-comments.nvim",
-		event = "VimEnter",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = { signs = false },
-	},
-
-	{ -- Collection of various small independent plugins/modules
-		"echasnovski/mini.nvim",
-		config = function()
-			-- Better Around/Inside textobjects
-			-- Examples:
-			--  - va)  - [V]isually select [A]round [)]paren
-			--  - yinq - [Y]ank [I]nside [N]ext [']quote
-			--  - ci'  - [C]hange [I]nside [']quote
-			require("mini.ai").setup({ n_lines = 500 })
-			-- Add/delete/replace surroundings (brackets, quotes, etc.)
-			-- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-			-- - sd'   - [S]urround [D]elete [']quotes
-			-- - sr)'  - [S]urround [R]eplace [)] [']
-			require("mini.surround").setup()
-		end,
-	},
-	{ import = "custom.plugins" },
+	{ import = "user.plugins" },
 }, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {

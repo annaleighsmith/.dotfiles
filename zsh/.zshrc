@@ -4,19 +4,30 @@
 #     |_  / __| '_ \| '__/ __|
 #    _ / /\__ \ | | | | | (__
 #   (_)___|___/_| |_|_|  \___|
-
-
 # ascii art on startup
 # ------------------------------>
 # bash /home/anna/projects/bash/asciihello.sh
 bash pfetch
 
-# oh-my-zsh
+# oh-my-zsh & prompt
 # ------------------------------>
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME=""
-ZSH_THEME="eastwood"
 source $ZSH/oh-my-zsh.sh
+
+# ZSH_THEME="eastwood"
+#
+# function parse_git_branch() {
+#     git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/\\ \1/p'
+# }
+function parse_git_branch() {
+    local branch=$(git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/\\ \1/p')
+    if [ -n "$branch" ]; then
+        echo "[${branch}]"
+    fi
+}
+setopt PROMPT_SUBST # probably already done by oh-my-zsh
+
+export PROMPT='%{${fg[cyan]}%}[%~]%{${fg[magenta]}%}$(parse_git_branch)%{$fg[green]%} $ %{${fg[default]}%}'
 
 # path variables
 # ------------------------------>
@@ -29,16 +40,17 @@ export GRIM_DEFAULT_DIR=$HOME/screenshots/
 export XDG_CURRENT_DESKTOP="sway"
 export CALIBRE_USE_SYSTEM_THEME=true
 export SDL_VIDEODRIVER="wayland"
+# export STARSHIP_CONFIG=~/.config/starship.toml
 
 # other variables
 # ------------------------------>
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LANGUAGE=en_Us.UTF-8
-export TERM="alacritty"
+export TERM="kitty"
 export EDITOR="nvim"
 export ARCHFLAGS="-arch x86_64"
-# export MANPATH="/usr/local/man:$MANPATH"
+export MANPATH="/usr/local/man:$MANPATH"
 export BAT_THEME="Nord"
 export PAGER="nvimpager"
 # --> source profile from zsh
@@ -54,9 +66,11 @@ HYPHEN_INSENSITIVE="true"
 # ENABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
 # DISABLE_UNTRACKED_FILES_DIRTY="true"
+#
 # --> Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 # HIST_STAMPS="mm/dd/yyyy"
+#
 # oh-my-zsh updates
 # ------------------------------>
 zstyle ':omz:update' mode reminder  # just remind me to update when it's time
@@ -74,7 +88,7 @@ unalias ll
 unalias la
 alias zshconfig="nvim ~/.zshrc"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
-alias cat="bat"
+# alias cat="bat"
 alias l='exa --icons --group-directories-first'
 alias ls='exa -a --icons --group-directories-first'
 alias lsa='exa -a --header --icons --group-directories-first --long --git'

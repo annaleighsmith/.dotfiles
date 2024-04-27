@@ -30,6 +30,7 @@ exec_always --no-startup-id $HOME/.config/i3/autorun.sh
 # exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 # exec --no-startup-id nm-applet
 exec --no-startup-id picom -CGb
+exec_always --no-startup-id dunst -config ~/.config/dunst/dunstrc
 exec polybar
 # =============================>
 # Audio
@@ -49,7 +50,7 @@ set $mod Mod4
 floating_modifier $mod
 workspace_layout default
 
-bindsym $mod+Return exec alacritty 
+bindsym $mod+Return exec kitty 
 bindsym $mod+q kill
 bindsym $mod+d exec --no-startup-id "rofi -show drun -theme /home/anna/.config/rofi/launchers/type-2/style-1.rasi"
 # bindsym $mod+Shift+e exec ~/.config/polybar/scripts/powermenu
@@ -58,15 +59,15 @@ bindsym $mod+d exec --no-startup-id "rofi -show drun -theme /home/anna/.config/r
 # General keybindings
 # =============================>
 # i like arrows, sue me
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
+bindsym $mod+Left focus left ; exec --no-startup-id ~/.config/i3/moving.sh
+bindsym $mod+Down focus down ; exec --no-startup-id ~/.config/i3/moving.sh
+bindsym $mod+Up focus up ; exec --no-startup-id ~/.config/i3/moving.sh
+bindsym $mod+Right focus right ; exec --no-startup-id ~/.config/i3/moving.sh
 
-bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Left move left 
 bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
-bindsym $mod+Shift+Right move right
+bindsym $mod+Shift+Up move up 
+bindsym $mod+Shift+Right move right 
 
 bindsym $mod+f fullscreen toggle
 
@@ -119,6 +120,7 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
+focus_follows_mouse yes
 # reload the configuration file
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart

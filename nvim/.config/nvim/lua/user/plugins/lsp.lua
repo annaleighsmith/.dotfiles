@@ -11,6 +11,55 @@ return {
 			{ "folke/neodev.nvim", opts = {} },
 		},
 		config = function()
+			local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+			for type, icon in pairs(signs) do
+				local hl = "DiagnosticSign" .. type
+				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+			end
+			vim.diagnostic.config({
+				-- virtual_text = {
+				-- 	-- prefix = "●",
+				-- 	severity_sort = true,
+				-- },
+				virtual_text = false,
+				float = {
+					-- border = "rounded",
+					source = "always", -- Or "if_many"
+					prefix = "",
+					width = 80,
+					-- border = "single",
+				},
+
+				severity_sort = true,
+				signs = {
+					linehl = { "DiagnosticErrorLn", "DiagnosticWarnLn", "DiagnosticInfoLn", "DiagnosticHintLn" },
+				},
+			})
+			-- auto show diagnostic when cursor hold
+			vim.api.nvim_create_autocmd("CursorHold", {
+				buffer = bufnr,
+				callback = function()
+					local float_opts = {
+						focusable = false,
+						close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+					}
+
+					if not vim.b.diagnostics_pos then
+						vim.b.diagnostics_pos = { nil, nil }
+					end
+
+					local cursor_pos = vim.api.nvim_win_get_cursor(0)
+					if
+						(cursor_pos[1] ~= vim.b.diagnostics_pos[1] or cursor_pos[2] ~= vim.b.diagnostics_pos[2])
+						and #vim.diagnostic.get() > 0
+					then
+						vim.diagnostic.open_float(nil, float_opts)
+					end
+
+					vim.b.diagnostics_pos = cursor_pos
+				end,
+			})
+
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
 				callback = function(event)
@@ -70,7 +119,7 @@ return {
 					},
 				},
 				-- gopls = {},
-				-- pyright = {},
+				pyright = {},
 				rust_analyzer = {},
 				lua_ls = {
 					-- cmd = {...},
@@ -110,7 +159,7 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		opts = {
-			ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "vim", "vimdoc" },
+			ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "vim", "vimdoc", "query" },
 			-- Autoinstall languages that are not installed
 			auto_install = true,
 			highlight = {
