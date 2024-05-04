@@ -1,4 +1,148 @@
+local colors = {
+	fg = "#C8D0E0",
+	fg_light = "#E5E9F0",
+	bg = "#2E3440",
+	gray = "#646A76",
+	light_gray = "#6C7A96",
+	cyan = "#88C0D0",
+	blue = "#81A1C1",
+	dark_blue = "#5E81AC",
+	green = "#A3BE8C",
+	light_green = "#8FBCBB",
+	dark_red = "#BF616A",
+	red = "#D57780",
+	light_red = "#DE878F",
+	pink = "#E85B7A",
+	dark_pink = "#E44675",
+	orange = "#D08F70",
+	yellow = "#EBCB8B",
+	purple = "#B988B0",
+	light_purple = "#B48EAD",
+	none = "NONE",
+	bg_light = "#434c5e",
+}
+
 return {
+	{
+		"rmehri01/onenord.nvim",
+		priority = 100,
+		init = function()
+			require("onenord").setup({
+				custom_highlights = {
+					RainbowDelimiterRed = { fg = colors.red },
+					RainbowDelimiterOrange = { fg = colors.orange },
+					RainbowDelimiterYellow = { fg = colors.yellow },
+					RainbowDelimiterBlue = { fg = colors.blue },
+					RainbowDelimiterGreen = { fg = colors.green },
+					RainbowDelimiterCyan = { fg = colors.cyan },
+					RainbowDelimiterViolet = { fg = colors.purple },
+
+					WhichKey = { fg = colors.green, bold = true },
+					WhichKeyGroup = { fg = colors.purple },
+					WhichKeyDesc = { fg = colors.fg_light },
+					WhichKeyFloat = { bg = colors.bg },
+				},
+			})
+		end,
+	},
+	{ -- tab bar at top of the screen
+		"romgrk/barbar.nvim",
+		dependencies = {
+			"lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
+			"nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
+		},
+		init = function()
+			vim.g.barbar_auto_setup = false
+		end,
+		opts = {
+			animation = true,
+			icons = {
+				button = "",
+				preset = "default",
+			},
+		},
+		version = "^1.0.0", -- optional: only update when a new 1.x version is released
+	},
+	{
+		"nvimdev/dashboard-nvim",
+		event = "VimEnter",
+
+		config = function()
+			require("dashboard").setup({
+				theme = "doom",
+				config = {
+					header = {
+						"                                                     ",
+						"                                                     ",
+						"                                                     ",
+						"                                                     ",
+						"  ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ",
+						"  ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║ ",
+						"  ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║ ",
+						"  ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║ ",
+						"  ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║ ",
+						"  ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝ ",
+						"                                                     ",
+						"                                                     ",
+						"                                                     ",
+						"                                                     ",
+						"                                                     ",
+					},
+					center = {
+						{
+							icon = "  ",
+							desc = "Recently opened files                   ",
+							action = "Telescope oldfiles",
+							key = "o",
+						},
+						{
+							icon = "  ",
+							desc = "Find File                               ",
+							action = "Telescope find_files hidden=true",
+							key = "f",
+						},
+						{
+							icon = "  ",
+							desc = "Find Word",
+							action = "Telescope live_grep",
+							key = "/",
+						},
+						{
+							icon = "󰇚  ",
+							desc = "Lazy",
+							action = "Lazy home",
+							key = "u",
+						},
+						{
+							icon = "  ",
+							desc = "Quit",
+							action = ":q",
+							key = "q",
+						},
+					},
+					footer = {},
+				},
+			})
+		end,
+		dependencies = { { "nvim-tree/nvim-web-devicons" } },
+	},
+
+	{
+		"Bekaboo/deadcolumn.nvim",
+		opts = {
+			blending = {
+				threshold = 0.1,
+				colorcode = "#EBCB8B",
+				hlgroup = { "Normal", "bg" },
+			},
+			warning = {
+				alpha = 0.4,
+				offset = 0,
+				colorcode = "#E06C75",
+				hlgroup = { "Error", "bg" },
+			},
+		},
+	},
 	{
 		"petertriho/nvim-scrollbar",
 		dependencies = { "lewis6991/gitsigns.nvim" },
@@ -130,87 +274,5 @@ return {
 				["<leader>h"] = { "Git Hunk" },
 			}, { mode = "v" })
 		end,
-	},
-	{
-		"nvimdev/dashboard-nvim",
-		event = "VimEnter",
-
-		config = function()
-			require("dashboard").setup({
-				theme = "doom",
-				config = {
-					header = {
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
-						"  ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ",
-						"  ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║ ",
-						"  ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║ ",
-						"  ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║ ",
-						"  ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║ ",
-						"  ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝ ",
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
-					},
-					center = {
-						{
-							icon = "  ",
-							desc = "Recently opened files                   ",
-							action = "Telescope oldfiles",
-							key = "o",
-						},
-						{
-							icon = "  ",
-							desc = "Find File                               ",
-							action = "Telescope find_files hidden=true",
-							key = "f",
-						},
-						{
-							icon = "  ",
-							desc = "Find Word",
-							action = "Telescope live_grep",
-							key = "/",
-						},
-						{
-							icon = "󰇚  ",
-							desc = "Lazy",
-							action = "Lazy home",
-							key = "u",
-						},
-						{
-							icon = "  ",
-							desc = "Quit",
-							action = ":q",
-							key = "q",
-						},
-					},
-					footer = {},
-				},
-			})
-		end,
-		dependencies = { { "nvim-tree/nvim-web-devicons" } },
-	},
-
-	{ -- tab bar at top of the screen
-		"romgrk/barbar.nvim",
-		dependencies = {
-			"lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
-			"nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
-		},
-		init = function()
-			vim.g.barbar_auto_setup = false
-		end,
-		opts = {
-			animation = true,
-			icons = {
-				button = "",
-				preset = "default",
-			},
-		},
-		version = "^1.0.0", -- optional: only update when a new 1.x version is released
 	},
 }
