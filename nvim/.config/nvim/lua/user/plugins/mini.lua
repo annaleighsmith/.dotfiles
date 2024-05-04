@@ -21,6 +21,20 @@ return {
 			-- - sd'   - [S]urround [D]elete [']quotes
 			-- - sr)'  - [S]urround [R]eplace [)] [']
 			require("mini.surround").setup()
+			require("mini.notify").setup({
+				content = {
+					format = nil,
+					sort = nil,
+				},
+				lsp_progress = {
+					enable = false,
+				},
+				window = {
+					config = {},
+					max_width_share = 0.382,
+					winblend = 25,
+				},
+			})
 		end,
 	},
 }

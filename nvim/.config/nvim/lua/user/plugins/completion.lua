@@ -176,7 +176,7 @@ return {
 		opts = {
 			notify_on_error = false,
 			format_on_save = function(bufnr)
-				local disable_filetypes = { c = true, cpp = true }
+				local disable_filetypes = { c = true, cpp = true, python = false, rust = true }
 				return {
 					timeout_ms = 500,
 					lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
@@ -184,6 +184,7 @@ return {
 			end,
 			formatters_by_ft = {
 				lua = { "stylua" },
+				python = { "black" },
 				-- python = { "isort", "black" },
 				-- javascript = { { "prettierd", "prettier" } },
 			},
@@ -201,7 +202,6 @@ return {
 	},
 	{
 		"zbirenbaum/copilot-cmp",
-
 		config = function()
 			require("copilot_cmp").setup()
 		end,
@@ -218,13 +218,10 @@ return {
 		},
 		keys = {
 			{
-				"<leader>cc",
+				"<leader>tC",
 				":CopilotChatToggle<CR>",
-				-- function()
-				-- 	require("copilot_chat").toggle()
-				-- end,
 				mode = "n",
-				desc = "Toggle Copilot Chat",
+				desc = "toggle copilot chat window",
 			},
 		},
 	},

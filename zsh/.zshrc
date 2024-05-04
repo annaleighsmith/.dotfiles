@@ -29,19 +29,20 @@ setopt PROMPT_SUBST # probably already done by oh-my-zsh
 
 export PROMPT='%{${fg[cyan]}%}[%~]%{${fg[magenta]}%}$(parse_git_branch)%{$fg[green]%} $ %{${fg[default]}%}'
 
+
+
 # path variables
 # ------------------------------>
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:/home/anna/go/bin
-
 export GRIM_DEFAULT_DIR=$HOME/screenshots/
 export XDG_CURRENT_DESKTOP="sway"
 export CALIBRE_USE_SYSTEM_THEME=true
 export SDL_VIDEODRIVER="wayland"
+export OPENAI_API_KEY=$(<.chatgptapikey)
 # export STARSHIP_CONFIG=~/.config/starship.toml
-
 # other variables
 # ------------------------------>
 export LANG=en_US.UTF-8

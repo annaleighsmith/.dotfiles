@@ -70,45 +70,48 @@ return {
 		},
 	},
 
-	-- {
-	-- 	"folke/noice.nvim",
-	-- 	event = "VeryLazy",
-	-- 	opts = {
-	-- 		presets = {
-	-- 			-- bottom_search = true,
-	-- 			-- command_palette = true,
-	-- 			lsp_doc_border = true,
-	-- 			long_message_to_split = true,
-	-- 		},
-	-- 		lsp = {
-	-- 			override = {
-	-- 				["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-	-- 				["vim.lsp.util.stylize_markdown"] = true,
-	-- 				["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
-	-- 			},
-	-- 		},
-	-- 	},
-	-- 	config = function()
-	-- 		require("noice").setup({
-	-- 			cmdline = {
-	-- 				view = "cmdline",
-	-- 			},
-	-- 		})
-	-- 	end,
-	-- 	dependencies = {
-	-- 		"MunifTanjim/nui.nvim",
-	-- 		"rcarriga/nvim-notify",
-	-- 	},
-	-- },
 	{
-		"j-hui/fidget.nvim",
-		opts = {},
+		"folke/noice.nvim",
+		event = "VeryLazy",
+		opts = {
+			presets = {
+				bottom_search = true,
+				lsp_doc_border = true,
+				long_message_to_split = true,
+			},
+			lsp = {
+				override = {
+					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+					["vim.lsp.util.stylize_markdown"] = true,
+					["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+				},
+			},
+		},
+		config = function()
+			require("noice").setup({
+				cmdline = {
+					view = "cmdline",
+				},
+			})
+		end,
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+			-- "rcarriga/nvim-notify",
+		},
 	},
 	{ -- Useful plugin to show you pending keybinds.
 		"folke/which-key.nvim",
 		event = "VimEnter", -- Sets the loading event to 'VimEnter'
 		config = function() -- This is the function that runs, AFTER loading
-			require("which-key").setup()
+			require("which-key").setup({
+				window = {
+					border = "single", -- none, single, double, shadow
+					position = "bottom",
+					winblend = 20,
+					margin = { 1, 0, 1, 0 },
+					padding = { 0, 0, 0, 0 },
+				},
+			})
 
 			-- Document existing key chains
 			require("which-key").register({
@@ -192,7 +195,7 @@ return {
 		dependencies = { { "nvim-tree/nvim-web-devicons" } },
 	},
 
-	{
+	{ -- tab bar at top of the screen
 		"romgrk/barbar.nvim",
 		dependencies = {
 			"lewis6991/gitsigns.nvim", -- OPTIONAL: for git status

@@ -1,7 +1,3 @@
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-vim.g.have_nerd_font = true
-
 -- [[ Setting options ]]
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -23,12 +19,17 @@ vim.opt.colorcolumn = "80"
 vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 vim.opt.scrolloff = 5
+vim.opt.cmdheight = 0
+vim.opt.hlsearch = true
+vim.opt.smartindent = true
+vim.opt.expandtab = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
-vim.opt.cmdheight = 0
 
--- [[ Basic Keymaps ]]
-vim.opt.hlsearch = true
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+vim.g.have_nerd_font = true
+
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
@@ -94,6 +95,58 @@ if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
+
+vim.api.nvim_create_user_command("CopilotToggle", function()
+	if copilot_on then
+		vim.cmd("Copilot disable")
+		print("Copilot OFF")
+	else
+		vim.cmd("Copilot enable")
+		print("Copilot ON")
+	end
+	copilot_on = not copilot_on
+end, { nargs = 0 })
+
+local maxoff = 50 -- maximum number of lines to look backwards.
+
+function get_google_python_indent(lnum)
+	-- Indent inside parens.
+	-- Align with the open paren unless it is at the end of the line.
+	-- E.g.
+	--   open_paren_not_at_EOL(100,
+	--                         (200,
+	--                          300),
+	--                         400)
+	--   open_paren_at_EOL(
+	--       100, 200, 300, 400)
+	vim.api.nvim_win_set_cursor(0, { lnum, 1 })
+	local par_line, par_col = vim.fn.searchpairpos(
+		"(|{|[",
+		"",
+		")|}|]",
+		"bW",
+		'line(".") < '
+			.. (lnum - maxoff)
+			.. ' ? "" : '
+			.. 'synIDattr(synID(line("."), col("."), 1), "name")'
+			.. ' =~ "\\(Comment\\|String\\)$"'
+	)
+	if par_line > 0 then
+		vim.api.nvim_win_set_cursor(0, { par_line, 1 })
+		if par_col ~= vim.fn.col("$") - 1 then
+			return par_col
+		end
+	end
+
+	-- Delegate the rest to the original function.
+	return vim.fn.GetPythonIndent(lnum)
+end
+
+vim.g.pyindent_nested_paren = "&sw*2"
+vim.g.pyindent_open_paren = "&sw*2"
+
+-- vim.keymap.set("n", "<up>", "<C-w><C-k>", { desc = "Move focus to upper window" })
+vim.keymap.set("", "<leader>tc", ":CopilotToggle<CR>", { desc = "toggle copilot completions" })
 
 require("lazy").setup({
 	"tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
