@@ -1,5 +1,19 @@
 return {
-
+	{
+		"mrjones2014/legendary.nvim",
+		version = "*",
+		priority = 10000,
+		lazy = false,
+		config = function()
+			require("legendary").setup({
+				extensions = {
+					nvim_tree = true,
+					which_key = { auto_register = true },
+					lazy_nvim = { auto_register = true },
+				},
+			})
+		end,
+	},
 	{ "ThePrimeagen/vim-be-good" },
 	{ -- Harpoon
 		"ThePrimeagen/harpoon",

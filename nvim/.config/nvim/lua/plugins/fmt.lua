@@ -58,7 +58,7 @@ return {
 		"hiphish/rainbow-delimiters.nvim",
 		event = { "BufReadPre", "BufNewFile" },
 	},
-	{ -- Autoformat
+	{ -- autoformat
 		"stevearc/conform.nvim",
 		lazy = false,
 		keys = {
@@ -68,7 +68,7 @@ return {
 					require("conform").format({ async = true, lsp_fallback = true })
 				end,
 				mode = "",
-				desc = "Format buffer",
+				desc = "format buffer",
 			},
 		},
 		opts = {

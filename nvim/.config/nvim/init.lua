@@ -10,7 +10,7 @@ vim.g.pyindent_nested_paren = "&sw*2"
 vim.g.pyindent_open_paren = "&sw*2"
 
 -- ── Modules ─────────────────────────────────────────────────────────
-require("options")
-require("keymaps")
-require("lazy-bootstrap")
-require("lazy-plugins")
+require("core.options")
+require("core.keymaps")
+require("core.lazy-bootstrap")
+require("core.lazy-plugins")

@@ -25,13 +25,5 @@ return {
 		opts = {
 			debug = true,
 		},
-		keys = {
-			{
-				"<leader>tC",
-				":CopilotChatToggle<CR>",
-				mode = "n",
-				desc = "toggle copilot chat window",
-			},
-		},
 	},
 }

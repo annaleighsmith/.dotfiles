@@ -1,10 +1,10 @@
 return {
-	{ -- Highlight, edit, and navigate code
+	{ -- highlight, edit, and navigate code
 		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
+		build = ":tsupdate",
 		opts = {
 			ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "vim", "vimdoc", "query" },
-			-- Autoinstall languages that are not installed
+			-- autoinstall languages that are not installed
 			auto_install = true,
 			highlight = {
 				enable = true,
@@ -35,6 +35,7 @@ return {
 				local hl = "DiagnosticSign" .. type
 				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 			end
+
 			vim.diagnostic.config({
 				-- virtual_text = {
 				-- 	-- prefix = "●",
@@ -54,7 +55,7 @@ return {
 					linehl = { "DiagnosticErrorLn", "DiagnosticWarnLn", "DiagnosticInfoLn", "DiagnosticHintLn" },
 				},
 			})
-			-- auto show diagnostic when cursor hold
+
 			vim.api.nvim_create_autocmd("CursorHold", {
 				buffer = bufnr,
 				callback = function()
