@@ -4,11 +4,9 @@
 #     |_  / __| '_ \| '__/ __|
 #    _ / /\__ \ | | | | | (__
 #   (_)___|___/_| |_|_|  \___|
-# ascii art on startup
-# ------------------------------>
-# bash /home/anna/projects/bash/asciihello.sh
-bash pfetch
 
+
+pfetch
 # oh-my-zsh & prompt
 # ------------------------------>
 export ZSH="$HOME/.oh-my-zsh"
@@ -41,7 +39,7 @@ export GRIM_DEFAULT_DIR=$HOME/screenshots/
 export XDG_CURRENT_DESKTOP="sway"
 export CALIBRE_USE_SYSTEM_THEME=true
 export SDL_VIDEODRIVER="wayland"
-export OPENAI_API_KEY=$(<.chatgptapikey)
+# export OPENAI_API_KEY=$(<.chatgptapikey)
 # export STARSHIP_CONFIG=~/.config/starship.toml
 # other variables
 # ------------------------------>
@@ -54,6 +52,13 @@ export ARCHFLAGS="-arch x86_64"
 export MANPATH="/usr/local/man:$MANPATH"
 export BAT_THEME="Nord"
 export PAGER="nvimpager"
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
 # --> source profile from zsh
 [[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
 
@@ -80,7 +85,7 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # plugins
 # ------------------------------>
-plugins=(git)
+# plugins=(git)
 
 # alias
 # ------------------------------>
