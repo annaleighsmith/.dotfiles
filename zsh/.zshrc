@@ -39,7 +39,8 @@ export GRIM_DEFAULT_DIR=$HOME/screenshots/
 export XDG_CURRENT_DESKTOP="sway"
 export CALIBRE_USE_SYSTEM_THEME=true
 export SDL_VIDEODRIVER="wayland"
-# export OPENAI_API_KEY=$(<.chatgptapikey)
+export OPENWEATHER_API_KEY=$(</home/anna/.openweatherapikey)
+export OPENAI_API_KEY=$(</home/anna/.chatgptapikey)
 # export STARSHIP_CONFIG=~/.config/starship.toml
 # other variables
 # ------------------------------>

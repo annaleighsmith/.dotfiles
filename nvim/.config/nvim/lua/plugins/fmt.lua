@@ -10,33 +10,7 @@ return {
 		end,
 		opts = {},
 	},
-	{
-		"lukas-reineke/indent-blankline.nvim",
-		event = "VimEnter",
-		opts = {
-			indent = {
-				char = "│",
-				tab_char = "│",
-			},
-			scope = { enabled = false },
-			exclude = {
-				filetypes = {
-					"help",
-					"alpha",
-					"dashboard",
-					"neo-tree",
-					"Trouble",
-					"trouble",
-					"lazy",
-					"mason",
-					"notify",
-					"toggleterm",
-					"lazyterm",
-				},
-			},
-		},
-		main = "ibl",
-	},
+
 	{
 		"folke/todo-comments.nvim",
 		event = "VimEnter",
@@ -54,10 +28,7 @@ return {
 			cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 		end,
 	},
-	{
-		"hiphish/rainbow-delimiters.nvim",
-		event = { "BufReadPre", "BufNewFile" },
-	},
+
 	{ -- autoformat
 		"stevearc/conform.nvim",
 		lazy = false,
