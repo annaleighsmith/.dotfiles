@@ -31,6 +31,7 @@ export PROMPT='%{${fg[cyan]}%}[%~]%{${fg[magenta]}%}$(parse_git_branch)%{$fg[gre
 
 # path variables
 # ------------------------------>
+export PATH=/home/anna/context/tex/texmf-linux-64/bin:$PATH
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/.local/bin
