@@ -53,9 +53,6 @@ return {
 			end,
 			formatters_by_ft = {
 				lua = { "stylua" },
-				python = { "black" },
-				-- python = { "isort", "black" },
-				-- javascript = { { "prettierd", "prettier" } },
 			},
 		},
 	},

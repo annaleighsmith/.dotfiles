@@ -1,23 +1,16 @@
 return {
-	{ -- highlight, edit, and navigate code
+	{
 		"nvim-treesitter/nvim-treesitter",
-		build = ":tsupdate",
 		opts = {
 			ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "vim", "vimdoc", "query", "python" },
-			-- autoinstall languages that are not installed
 			auto_install = true,
 			highlight = {
 				enable = true,
-				additional_vim_regex_highlighting = { "ruby" },
 			},
 			indent = { enable = true, disable = { "ruby" } },
 		},
-		config = function(_, opts)
-			require("nvim-treesitter.install").prefer_git = true
-			---@diagnostic disable-next-line: missing-fields
-			require("nvim-treesitter.configs").setup(opts)
-		end,
 	},
+
 	{ -- LSP Configuration & Plugins
 		"neovim/nvim-lspconfig",
 		dependencies = {
@@ -37,10 +30,6 @@ return {
 			end
 
 			vim.diagnostic.config({
-				-- virtual_text = {
-				-- 	-- prefix = "●",
-				-- 	severity_sort = true,
-				-- },
 				virtual_text = false,
 				float = {
 					-- border = "rounded",
@@ -138,13 +127,10 @@ return {
 						offsetEncoding = "utf-8",
 					},
 				},
-				gopls = {},
+				-- gopls = {},
 				pyright = {},
 				rust_analyzer = {},
 				lua_ls = {
-					-- cmd = {...},
-					-- filetypes = { ...},
-					-- capabilities = {},
 					settings = {
 						Lua = {
 							completion = {

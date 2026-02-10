@@ -52,55 +52,54 @@ return {
 		"lukas-reineke/indent-blankline.nvim",
 		event = "VimEnter",
 		config = function()
+			-- Define colors first
+			local colors = {
+				red = "#E06C75",
+				yellow = "#E5C07B",
+				blue = "#61AFEF",
+				orange = "#D19A66",
+				green = "#98C379",
+				cyan = "#56B6C2",
+			}
+
 			local highlight = {
 				"RainbowRed",
 				"RainbowYellow",
 				"RainbowBlue",
 				"RainbowOrange",
 				"RainbowGreen",
-				-- "RainbowViolet",
 				"RainbowCyan",
 			}
+
 			local hooks = require("ibl.hooks")
-			-- create the highlight groups in the highlight setup hook, so they are reset
-			-- every time the colorscheme changes
 			hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
 				vim.api.nvim_set_hl(0, "RainbowRed", { fg = colors.red })
 				vim.api.nvim_set_hl(0, "RainbowYellow", { fg = colors.yellow })
 				vim.api.nvim_set_hl(0, "RainbowBlue", { fg = colors.blue })
 				vim.api.nvim_set_hl(0, "RainbowOrange", { fg = colors.orange })
 				vim.api.nvim_set_hl(0, "RainbowGreen", { fg = colors.green })
-				-- vim.api.nvim_set_hl(0, "RainbowViolet", { fg = colors.violet })
 				vim.api.nvim_set_hl(0, "RainbowCyan", { fg = colors.cyan })
 			end)
 
 			vim.g.rainbow_delimiters = { highlight = highlight }
-			require("ibl").setup({ scope = { highlight = highlight } })
-
-			hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
-		end,
-		opts = {
-			indent = {
-				char = "│",
-				tab_char = "│",
-			},
-			scope = { enabled = false },
-			exclude = {
-				filetypes = {
-					"help",
-					"alpha",
-					"dashboard",
-					"neo-tree",
-					"Trouble",
-					"trouble",
-					"lazy",
-					"mason",
-					"notify",
-					"toggleterm",
-					"lazyterm",
+			require("ibl").setup({
+				exclude = {
+					filetypes = {
+						"help",
+						"alpha",
+						"dashboard",
+						"neo-tree",
+						"Trouble",
+						"trouble",
+						"lazy",
+						"mason",
+						"notify",
+						"toggleterm",
+						"lazyterm",
+					},
 				},
-			},
-		},
+			})
+		end,
 	},
 	{ -- tab bar at top of the screen
 		"romgrk/barbar.nvim",
@@ -121,29 +120,39 @@ return {
 		version = "^1.0.0", -- optional: only update when a new 1.x version is released
 	},
 	{
+		"MaximilianLloyd/ascii.nvim",
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+		},
+	},
+	{
 		"nvimdev/dashboard-nvim",
 		event = "VimEnter",
-
 		config = function()
 			require("dashboard").setup({
 				theme = "doom",
 				config = {
 					header = {
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
-						"  ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ",
-						"  ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║ ",
-						"  ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║ ",
-						"  ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║ ",
-						"  ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║ ",
-						"  ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝ ",
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
-						"                                                     ",
+						"                    ______________                ",
+						"                   /             /|               ",
+						"                  /             / |               ",
+						"                 /____________ /  |               ",
+						"                | ___________ |   |               ",
+						"                ||  *    *   ||   |               ",
+						"                ||    vi     ||   |               ",
+						"                ||  -....-   ||   |               ",
+						"                ||___________||   |               ",
+						"                |   _______   |  /                ",
+						"               /|  (_______)  | /                 ",
+						"              ( |_____________|/                  ",
+						"          .=======================.              ",
+						"          | ::::::::::::::::  ::: |              ",
+						"          | ::::::::::::::[]  ::: |              ",
+						"          |   -----------     ::: |              ",
+						"          \\-----------------------'              ",
+						"          																     ",
+						"          																     ",
+						"          																     ",
 					},
 					center = {
 						{
@@ -160,24 +169,25 @@ return {
 						},
 						{
 							icon = "  ",
-							desc = "Find Word",
+							desc = "Find Word                               ",
 							action = "Telescope live_grep",
-							key = "/",
+							key = "w",
 						},
 						{
 							icon = "󰇚  ",
-							desc = "Lazy",
+							desc = "Lazy                                    ",
 							action = "Lazy home",
-							key = "u",
+							key = "l",
 						},
+						-- check health
 						{
-							icon = "  ",
-							desc = "Quit",
-							action = ":q",
-							key = "q",
+							icon = "  ",
+							desc = "Check Health                           ",
+							action = "checkhealth",
+							key = "h",
 						},
+						{ icon = "  ", desc = "Quit                                    ", action = ":q", key = "q" },
 					},
-					footer = {},
 				},
 			})
 		end,
@@ -303,33 +313,28 @@ return {
 	{ -- Useful plugin to show you pending keybinds.
 		"folke/which-key.nvim",
 		event = "VimEnter", -- Sets the loading event to 'VimEnter'
-		config = function() -- This is the function that runs, AFTER loading
-			require("which-key").setup({
-				window = {
-					border = "single", -- none, single, double, shadow
-					position = "bottom",
-					winblend = 20,
-					margin = { 1, 0, 1, 0 },
-					padding = { 0, 0, 0, 0 },
-				},
-			})
-
-			-- Document existing key chains
+		config = function()
 			require("which-key").register({
-				["<leader>b"] = { name = "Buffer", _ = "which_key_ignore" },
-				["<leader>c"] = { name = "Code", _ = "which_key_ignore" },
-				["<leader>g"] = { name = "GitHunk", _ = "which_key_ignore" },
-				["<leader>h"] = { name = "Harpoon", _ = "which_key_ignore" },
-				["<leader>l"] = { name = "LSP", _ = "which_key_ignore" },
-				["<leader>r"] = { name = "Rename", _ = "which_key_ignore" },
-				["<leader>s"] = { name = "Search", _ = "which_key_ignore" },
-				["<leader>e"] = { name = "Tree", _ = "which_key_ignore" },
-				["<leader>t"] = { name = "Toggle", _ = "which_key_ignore" },
+				{ "<leader>b", group = "Buffer" },
+				{ "<leader>b_", hidden = true },
+				{ "<leader>c", group = "Code" },
+				{ "<leader>c_", hidden = true },
+				{ "<leader>e", group = "Tree" },
+				{ "<leader>e_", hidden = true },
+				{ "<leader>g", group = "GitHunk" },
+				{ "<leader>g_", hidden = true },
+				{ "<leader>h", group = "Harpoon" },
+				{ "<leader>h_", hidden = true },
+				{ "<leader>l", group = "LSP" },
+				{ "<leader>l_", hidden = true },
+				{ "<leader>r", group = "Rename" },
+				{ "<leader>r_", hidden = true },
+				{ "<leader>s", group = "Search" },
+				{ "<leader>s_", hidden = true },
+				{ "<leader>t", group = "Toggle" },
+				{ "<leader>t_", hidden = true },
+				{ "<leader>h", desc = "Git Hunk", mode = "v" },
 			})
-			-- visual mode
-			require("which-key").register({
-				["<leader>h"] = { "Git Hunk" },
-			}, { mode = "v" })
 		end,
 	},
 }
