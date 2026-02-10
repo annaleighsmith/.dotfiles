@@ -28,6 +28,9 @@ return {
 		priority = 100,
 		init = function()
 			require("onenord").setup({
+				disable = {
+					background = true,
+				},
 				custom_highlights = {
 					RainbowDelimiterRed = { fg = colors.red },
 					RainbowDelimiterOrange = { fg = colors.orange },
@@ -52,8 +55,7 @@ return {
 		"lukas-reineke/indent-blankline.nvim",
 		event = "VimEnter",
 		config = function()
-			-- Define colors first
-			local colors = {
+			local ibl_colors = {
 				red = "#E06C75",
 				yellow = "#E5C07B",
 				blue = "#61AFEF",
@@ -73,12 +75,12 @@ return {
 
 			local hooks = require("ibl.hooks")
 			hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-				vim.api.nvim_set_hl(0, "RainbowRed", { fg = colors.red })
-				vim.api.nvim_set_hl(0, "RainbowYellow", { fg = colors.yellow })
-				vim.api.nvim_set_hl(0, "RainbowBlue", { fg = colors.blue })
-				vim.api.nvim_set_hl(0, "RainbowOrange", { fg = colors.orange })
-				vim.api.nvim_set_hl(0, "RainbowGreen", { fg = colors.green })
-				vim.api.nvim_set_hl(0, "RainbowCyan", { fg = colors.cyan })
+				vim.api.nvim_set_hl(0, "RainbowRed", { fg = ibl_colors.red })
+				vim.api.nvim_set_hl(0, "RainbowYellow", { fg = ibl_colors.yellow })
+				vim.api.nvim_set_hl(0, "RainbowBlue", { fg = ibl_colors.blue })
+				vim.api.nvim_set_hl(0, "RainbowOrange", { fg = ibl_colors.orange })
+				vim.api.nvim_set_hl(0, "RainbowGreen", { fg = ibl_colors.green })
+				vim.api.nvim_set_hl(0, "RainbowCyan", { fg = ibl_colors.cyan })
 			end)
 
 			vim.g.rainbow_delimiters = { highlight = highlight }
@@ -104,8 +106,8 @@ return {
 	{ -- tab bar at top of the screen
 		"romgrk/barbar.nvim",
 		dependencies = {
-			"lewis6991/gitsigns.nvim", -- OPTIONAL: for git status
-			"nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
+			"lewis6991/gitsigns.nvim",
+			"nvim-tree/nvim-web-devicons",
 		},
 		init = function()
 			vim.g.barbar_auto_setup = false
@@ -113,17 +115,11 @@ return {
 		opts = {
 			animation = true,
 			icons = {
-				button = "",
+				button = "",
 				preset = "default",
 			},
 		},
-		version = "^1.0.0", -- optional: only update when a new 1.x version is released
-	},
-	{
-		"MaximilianLloyd/ascii.nvim",
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-		},
+		version = "^1.0.0",
 	},
 	{
 		"nvimdev/dashboard-nvim",
@@ -156,19 +152,19 @@ return {
 					},
 					center = {
 						{
-							icon = "  ",
+							icon = "  ",
 							desc = "Recently opened files                   ",
 							action = "Telescope oldfiles",
 							key = "o",
 						},
 						{
-							icon = "  ",
+							icon = "  ",
 							desc = "Find File                               ",
 							action = "Telescope find_files hidden=true",
 							key = "f",
 						},
 						{
-							icon = "  ",
+							icon = "  ",
 							desc = "Find Word                               ",
 							action = "Telescope live_grep",
 							key = "w",
@@ -179,14 +175,13 @@ return {
 							action = "Lazy home",
 							key = "l",
 						},
-						-- check health
 						{
-							icon = "  ",
+							icon = "  ",
 							desc = "Check Health                           ",
 							action = "checkhealth",
 							key = "h",
 						},
-						{ icon = "  ", desc = "Quit                                    ", action = ":q", key = "q" },
+						{ icon = "  ", desc = "Quit                                    ", action = ":q", key = "q" },
 					},
 				},
 			})
@@ -219,8 +214,6 @@ return {
 				"neo-tree",
 				"help",
 				"alpha",
-				"dashboard",
-				"neo-tree",
 				"Trouble",
 				"trouble",
 				"lazy",
@@ -237,7 +230,7 @@ return {
 			},
 			handle = {
 				blend = 20,
-				higlight = "Cursor",
+				highlight = "Cursor",
 			},
 			handlers = {
 				gitsigns = true,
@@ -252,25 +245,24 @@ return {
 			options = {
 				theme = "auto",
 				icons_enabled = true,
-				section_separators = { "", "" },
-				component_separators = { "", "" },
+				section_separators = { "", "" },
+				component_separators = { "", "" },
 			},
 			sections = {
 				lualine_a = { "mode" },
 				lualine_b = { "branch" },
-				-- lualine_c = { "filename" },
 				lualine_c = {
 					{
 						"filename",
 						path = 1,
-						file_status = true, -- Displays file status (readonly status, modified status)
-						newfile_status = false, -- Display new file status (new file means no write after created)
-						shorting_target = 40, -- Shortens path to leave 40 spaces in the window
+						file_status = true,
+						newfile_status = false,
+						shorting_target = 40,
 						symbols = {
-							modified = "[+]", -- Text to show when the file is modified.
-							readonly = "[-]", -- Text to show when the file is non-modifiable or readonly.
-							unnamed = "[No Name]", -- Text to show for unnamed buffers.
-							newfile = "[New]", -- Text to show for newly created file before first write
+							modified = "[+]",
+							readonly = "[-]",
+							unnamed = "[No Name]",
+							newfile = "[New]",
 						},
 					},
 				},
@@ -284,55 +276,43 @@ return {
 	{
 		"folke/noice.nvim",
 		event = "VeryLazy",
-		opts = {
-			presets = {
-				bottom_search = true,
-				lsp_doc_border = true,
-				long_message_to_split = true,
-			},
-			lsp = {
-				override = {
-					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-					["vim.lsp.util.stylize_markdown"] = true,
-					["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
-				},
-			},
-		},
 		config = function()
 			require("noice").setup({
 				cmdline = {
 					view = "cmdline",
 				},
+				presets = {
+					bottom_search = true,
+					lsp_doc_border = true,
+					long_message_to_split = true,
+				},
+				lsp = {
+					override = {
+						["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+						["vim.lsp.util.stylize_markdown"] = true,
+						["cmp.entry.get_documentation"] = true,
+					},
+				},
 			})
 		end,
 		dependencies = {
 			"MunifTanjim/nui.nvim",
-			-- "rcarriga/nvim-notify",
 		},
 	},
 	{ -- Useful plugin to show you pending keybinds.
 		"folke/which-key.nvim",
-		event = "VimEnter", -- Sets the loading event to 'VimEnter'
+		event = "VimEnter",
 		config = function()
-			require("which-key").register({
+			require("which-key").add({
 				{ "<leader>b", group = "Buffer" },
-				{ "<leader>b_", hidden = true },
 				{ "<leader>c", group = "Code" },
-				{ "<leader>c_", hidden = true },
 				{ "<leader>e", group = "Tree" },
-				{ "<leader>e_", hidden = true },
 				{ "<leader>g", group = "GitHunk" },
-				{ "<leader>g_", hidden = true },
 				{ "<leader>h", group = "Harpoon" },
-				{ "<leader>h_", hidden = true },
 				{ "<leader>l", group = "LSP" },
-				{ "<leader>l_", hidden = true },
 				{ "<leader>r", group = "Rename" },
-				{ "<leader>r_", hidden = true },
 				{ "<leader>s", group = "Search" },
-				{ "<leader>s_", hidden = true },
 				{ "<leader>t", group = "Toggle" },
-				{ "<leader>t_", hidden = true },
 				{ "<leader>h", desc = "Git Hunk", mode = "v" },
 			})
 		end,

@@ -21,8 +21,6 @@ return {
 			"nvim-lua/plenary.nvim",
 			"zbirenbaum/copilot.lua",
 		},
-		opts = {
-			debug = true,
-		},
+		opts = {},
 	},
 }

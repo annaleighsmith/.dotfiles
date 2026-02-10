@@ -14,39 +14,37 @@ return {
 	{ -- LSP Configuration & Plugins
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			-- Automatically install LSPs and related tools to stdpath for Neovim
-			{ "williamboman/mason.nvim", config = true }, -- NOTE: Must be loaded before dependants
+			{ "williamboman/mason.nvim", config = true },
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
-			-- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
-			-- used for completion, annotations and signatures of Neovim apis
-			{ "folke/neodev.nvim", opts = {} },
+			{ "folke/lazydev.nvim", opts = {} },
 		},
 		config = function()
-			local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
-			for type, icon in pairs(signs) do
-				local hl = "DiagnosticSign" .. type
-				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-			end
-
 			vim.diagnostic.config({
 				virtual_text = false,
 				float = {
-					-- border = "rounded",
-					source = "always", -- Or "if_many"
+					source = "always",
 					prefix = "",
 					width = 80,
-					-- border = "single",
 				},
-
 				severity_sort = true,
 				signs = {
-					linehl = { "DiagnosticErrorLn", "DiagnosticWarnLn", "DiagnosticInfoLn", "DiagnosticHintLn" },
+					text = {
+						[vim.diagnostic.severity.ERROR] = " ",
+						[vim.diagnostic.severity.WARN] = " ",
+						[vim.diagnostic.severity.HINT] = " ",
+						[vim.diagnostic.severity.INFO] = " ",
+					},
+					linehl = {
+						[vim.diagnostic.severity.ERROR] = "DiagnosticErrorLn",
+						[vim.diagnostic.severity.WARN] = "DiagnosticWarnLn",
+						[vim.diagnostic.severity.INFO] = "DiagnosticInfoLn",
+						[vim.diagnostic.severity.HINT] = "DiagnosticHintLn",
+					},
 				},
 			})
 
 			vim.api.nvim_create_autocmd("CursorHold", {
-				buffer = bufnr,
 				callback = function()
 					local float_opts = {
 						focusable = false,
@@ -81,7 +79,7 @@ return {
 					map("gI", require("telescope.builtin").lsp_implementations, "Goto Implementation")
 					map("<leader>ld", require("telescope.builtin").lsp_type_definitions, "Type Definition")
 					map("<leader>ls", require("telescope.builtin").lsp_document_symbols, "Document Symbols")
-					map("<leader>ls", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Workspace Symbols")
+					map("<leader>lw", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Workspace Symbols")
 					map("<leader>rn", vim.lsp.buf.rename, "Rename")
 					map("<leader>ca", vim.lsp.buf.code_action, "Code Action")
 					map("K", vim.lsp.buf.hover, "Hover Documentation")
@@ -127,7 +125,6 @@ return {
 						offsetEncoding = "utf-8",
 					},
 				},
-				-- gopls = {},
 				pyright = {},
 				rust_analyzer = {},
 				lua_ls = {
@@ -145,7 +142,7 @@ return {
 			require("mason").setup()
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, {
-				"stylua", -- Used to format Lua code
+				"stylua",
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
