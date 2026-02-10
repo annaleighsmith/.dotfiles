@@ -8,6 +8,7 @@ return {
 	},
 	{
 		"mfussenegger/nvim-dap",
+		ft = { "rust" },
 		dependencies = {
 			"rcarriga/nvim-dap-ui",
 			"nvim-neotest/nvim-nio",

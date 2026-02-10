@@ -33,6 +33,8 @@ vim.keymap.set("n", "<A-9>", "<Cmd>BufferGoto 9<CR>", { desc = "Goto buffer in p
 vim.keymap.set("n", "<A-0>", "<Cmd>BufferLast<CR>", { desc = "Goto the last buffer" })
 vim.keymap.set("n", "<A-p>", "<Cmd>BufferPin<CR>", { desc = "Pin the current buffer" })
 vim.keymap.set("n", "<A-c>", "<Cmd>BufferClose<CR>", { desc = "Close the current buffer" })
+-- Explore
+vim.keymap.set("n", "<leader>ee", "<cmd>Ex<CR>", { desc = "Open netrw" })
 -- Diagnostic keymaps
 vim.keymap.set("n", "<leader>cp", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
 vim.keymap.set("n", "<leader>cn", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })

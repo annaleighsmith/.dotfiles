@@ -59,6 +59,9 @@ return {
 			luasnip.config.setup({})
 
 			cmp.setup({
+				view = {
+					entries = { name = "custom", selection_order = "near_cursor", direction = "below" },
+				},
 				snippet = {
 					expand = function(args)
 						luasnip.lsp_expand(args.body)
@@ -85,7 +88,7 @@ return {
 					["<C-p>"] = cmp.mapping.select_prev_item(),
 					["<C-b>"] = cmp.mapping.scroll_docs(-4),
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
-					["<Tab>"] = cmp.mapping.confirm({ select = true }),
+					["<C-y>"] = cmp.mapping.confirm({ select = true }),
 					["<C-Space>"] = cmp.mapping.complete({}),
 					["<C-l>"] = cmp.mapping(function()
 						if luasnip.expand_or_locally_jumpable() then
@@ -102,7 +105,7 @@ return {
 					{ name = "nvim_lsp" },
 					{ name = "luasnip" },
 					{ name = "path" },
-					{ name = "copilot", group_index = 2 },
+					{ name = "copilot" },
 				},
 				window = {
 					documentation = {

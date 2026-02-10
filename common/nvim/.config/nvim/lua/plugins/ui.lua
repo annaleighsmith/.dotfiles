@@ -18,8 +18,8 @@ local colors = {
 	yellow = "#EBCB8B",
 	purple = "#B988B0",
 	light_purple = "#B48EAD",
-	none = "NONE",
 	bg_light = "#434c5e",
+	none = "NONE",
 }
 
 return {
@@ -43,6 +43,19 @@ return {
 					WhichKeyGroup = { fg = colors.purple },
 					WhichKeyDesc = { fg = colors.fg_light },
 					WhichKeyFloat = { bg = colors.bg },
+					SnacksDashboardHeader = { fg = colors.green },
+					SnacksDashboardKey = { fg = colors.cyan },
+					SnacksDashboardIcon = { fg = colors.cyan },
+					SnacksDashboardDesc = { fg = colors.cyan },
+					SnacksDashboardFooter = { fg = colors.light_purple },
+					BufferTabpageFill = { bg = "NONE" },
+					BufferCurrent = { bg = "NONE", bold = true },
+					BufferCurrentSign = { bg = "NONE" },
+					BufferCurrentMod = { bg = "NONE", bold = true },
+					BufferVisible = { bg = "NONE" },
+					BufferVisibleSign = { bg = "NONE" },
+					BufferInactive = { bg = "NONE" },
+					BufferInactiveSign = { bg = "NONE" },
 				},
 			})
 		end,
@@ -89,7 +102,7 @@ return {
 					filetypes = {
 						"help",
 						"alpha",
-						"dashboard",
+						"snacks_dashboard",
 						"neo-tree",
 						"Trouble",
 						"trouble",
@@ -122,13 +135,13 @@ return {
 		version = "^1.0.0",
 	},
 	{
-		"nvimdev/dashboard-nvim",
-		event = "VimEnter",
-		config = function()
-			require("dashboard").setup({
-				theme = "doom",
-				config = {
-					header = {
+		"folke/snacks.nvim",
+		priority = 1000,
+		lazy = false,
+		opts = {
+			dashboard = {
+				preset = {
+					header = table.concat({
 						"                    ______________                ",
 						"                   /             /|               ",
 						"                  /             / |               ",
@@ -146,47 +159,23 @@ return {
 						"          | ::::::::::::::[]  ::: |              ",
 						"          |   -----------     ::: |              ",
 						"          \\-----------------------'              ",
-						"          																     ",
-						"          																     ",
-						"          																     ",
-					},
-					center = {
-						{
-							icon = "  ",
-							desc = "Recently opened files                   ",
-							action = "Telescope oldfiles",
-							key = "o",
-						},
-						{
-							icon = "  ",
-							desc = "Find File                               ",
-							action = "Telescope find_files hidden=true",
-							key = "f",
-						},
-						{
-							icon = "  ",
-							desc = "Find Word                               ",
-							action = "Telescope live_grep",
-							key = "w",
-						},
-						{
-							icon = "󰇚  ",
-							desc = "Lazy                                    ",
-							action = "Lazy home",
-							key = "l",
-						},
-						{
-							icon = "  ",
-							desc = "Check Health                           ",
-							action = "checkhealth",
-							key = "h",
-						},
-						{ icon = "  ", desc = "Quit                                    ", action = ":q", key = "q" },
+					}, "\n"),
+					keys = {
+						{ icon = "", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
+						{ icon = " ", key = "f", desc = "Find File", action = ":Telescope find_files hidden=true" },
+						{ icon = " ", key = "w", desc = "Find Word", action = ":Telescope live_grep" },
+						{ icon = "󰇚 ", key = "l", desc = "Lazy", action = ":Lazy home" },
+						{ icon = " ", key = "h", desc = "Check Health", action = ":checkhealth" },
+						{ icon = " ", key = "q", desc = "Quit", action = ":q" },
 					},
 				},
-			})
-		end,
-		dependencies = { { "nvim-tree/nvim-web-devicons" } },
+				sections = {
+					{ section = "header" },
+					{ section = "keys", gap = 1, padding = 1 },
+					{ section = "startup" },
+				},
+			},
+		},
 	},
 
 	{
@@ -210,7 +199,7 @@ return {
 		dependencies = { "lewis6991/gitsigns.nvim" },
 		opts = {
 			excluded_filetypes = {
-				"dashboard",
+				"snacks_dashboard",
 				"neo-tree",
 				"help",
 				"alpha",
@@ -241,36 +230,47 @@ return {
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
-		opts = {
-			options = {
-				theme = "auto",
-				icons_enabled = true,
-				section_separators = { "", "" },
-				component_separators = { "", "" },
-			},
-			sections = {
-				lualine_a = { "mode" },
-				lualine_b = { "branch" },
-				lualine_c = {
-					{
-						"filename",
-						path = 1,
-						file_status = true,
-						newfile_status = false,
-						shorting_target = 40,
-						symbols = {
-							modified = "[+]",
-							readonly = "[-]",
-							unnamed = "[No Name]",
-							newfile = "[New]",
+		config = function()
+			local theme = require("lualine.themes.auto")
+			for _, mode in pairs(theme) do
+				if mode.b then
+					mode.b.bg = "NONE"
+				end
+				if mode.c then
+					mode.c.bg = "NONE"
+				end
+			end
+			require("lualine").setup({
+				options = {
+					theme = theme,
+					icons_enabled = true,
+					section_separators = { "", "" },
+					component_separators = { "", "" },
+				},
+				sections = {
+					lualine_a = { "mode" },
+					lualine_b = { "branch" },
+					lualine_c = {
+						{
+							"filename",
+							path = 1,
+							file_status = true,
+							newfile_status = false,
+							shorting_target = 40,
+							symbols = {
+								modified = "[+]",
+								readonly = "[-]",
+								unnamed = "[No Name]",
+								newfile = "[New]",
+							},
 						},
 					},
+					lualine_x = { "encoding", "fileformat", "filetype" },
+					lualine_y = { "progress" },
+					lualine_z = { "location" },
 				},
-				lualine_x = { "encoding", "fileformat", "filetype" },
-				lualine_y = { "progress" },
-				lualine_z = { "location" },
-			},
-		},
+			})
+		end,
 	},
 
 	{
@@ -306,7 +306,7 @@ return {
 			require("which-key").add({
 				{ "<leader>b", group = "Buffer" },
 				{ "<leader>c", group = "Code" },
-				{ "<leader>e", group = "Tree" },
+				{ "<leader>e", group = "Explore" },
 				{ "<leader>g", group = "GitHunk" },
 				{ "<leader>h", group = "Harpoon" },
 				{ "<leader>l", group = "LSP" },
