@@ -49,7 +49,7 @@
 # resize-overlay-duration = 4s 200ms
 #
 font-family = "FiraCode Nerd Font Mono"
-background-opacity = 0.95
+background-opacity = 1
 
 keybind = super+b=new_split
 keybind = super+n=new_window

@@ -116,24 +116,6 @@ return {
 			})
 		end,
 	},
-	{ -- tab bar at top of the screen
-		"romgrk/barbar.nvim",
-		dependencies = {
-			"lewis6991/gitsigns.nvim",
-			"nvim-tree/nvim-web-devicons",
-		},
-		init = function()
-			vim.g.barbar_auto_setup = false
-		end,
-		opts = {
-			animation = true,
-			icons = {
-				button = "",
-				preset = "default",
-			},
-		},
-		version = "^1.0.0",
-	},
 	{
 		"folke/snacks.nvim",
 		priority = 1000,
@@ -229,7 +211,7 @@ return {
 	},
 	{
 		"nvim-lualine/lualine.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
+		dependencies = { "echasnovski/mini.nvim" },
 		config = function()
 			local theme = require("lualine.themes.auto")
 			for _, mode in pairs(theme) do
@@ -306,7 +288,7 @@ return {
 			require("which-key").add({
 				{ "<leader>b", group = "Buffer" },
 				{ "<leader>c", group = "Code" },
-				{ "<leader>e", group = "Explore" },
+				{ "<leader>e", group = "Explore", icon = " " },
 				{ "<leader>g", group = "GitHunk" },
 				{ "<leader>h", group = "Harpoon" },
 				{ "<leader>l", group = "LSP" },

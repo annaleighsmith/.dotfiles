@@ -10,7 +10,7 @@ require("lazy").setup({
 	require("plugins.fmt"), -- linting, formatting, other misc text editing
 	require("plugins.lsp"), -- lsp servers, treesitter
 	require("plugins.tools"), -- harpoon, mini, gitsigns
-	require("plugins.ui"), -- theme, barbar, dashboar, lualine, whichkey
+	require("plugins.ui"), -- theme, dashboard, lualine, whichkey
 }, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {

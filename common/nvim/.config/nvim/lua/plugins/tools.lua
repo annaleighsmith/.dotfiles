@@ -46,11 +46,11 @@ return {
 
 	{ -- Collection of various small independent plugins/modules
 		"echasnovski/mini.nvim",
-		dependencies = {
-			"nvim-tree/nvim-web-devicons",
-		},
 		config = function()
+			require("mini.icons").setup()
+			MiniIcons.mock_nvim_web_devicons()
 			require("mini.ai").setup({ n_lines = 500 })
+			require("mini.tabline").setup()
 			require("mini.surround").setup()
 			require("mini.notify").setup({
 				content = {
@@ -66,6 +66,29 @@ return {
 					winblend = 25,
 				},
 			})
+		end,
+	},
+	{
+		"gbprod/yanky.nvim",
+		dependencies = { "kkharji/sqlite.lua" },
+		opts = {
+			ring = { storage = "sqlite" },
+		},
+		keys = {
+			{ "y", "<Plug>(YankyYank)", mode = { "n", "x" }, desc = "Yank" },
+			{ "p", "<Plug>(YankyPutAfter)", mode = { "n", "x" }, desc = "Put after" },
+			{ "P", "<Plug>(YankyPutBefore)", mode = { "n", "x" }, desc = "Put before" },
+			{ "gp", "<Plug>(YankyGPutAfter)", mode = { "n", "x" }, desc = "GPut after" },
+			{ "gP", "<Plug>(YankyGPutBefore)", mode = { "n", "x" }, desc = "GPut before" },
+			{ "<C-p>", "<Plug>(YankyPreviousEntry)", desc = "Cycle yank history back" },
+			{ "<C-n>", "<Plug>(YankyNextEntry)", desc = "Cycle yank history forward" },
+			{ "]p", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put indented after" },
+			{ "[p", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put indented before" },
+			{ "<leader>sy", function() require("telescope").extensions.yank_history.yank_history({}) end, desc = "Search Yank History" },
+		},
+		config = function(_, opts)
+			require("yanky").setup(opts)
+			require("telescope").load_extension("yank_history")
 		end,
 	},
 	{

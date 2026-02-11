@@ -4,12 +4,12 @@ return {
 		version = "*",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
 			"MunifTanjim/nui.nvim",
 		},
 		cmd = "Neotree",
 		keys = {
 			{ "\\", ":Neotree toggle<CR>", desc = "NeoTree" },
+			{ "<leader>et", ":Neotree toggle<CR>", desc = "NeoTree" },
 		},
 		opts = {
 			filesystem = {
@@ -20,6 +20,19 @@ return {
 				},
 			},
 		},
+	},
+	{
+		"stevearc/oil.nvim",
+		keys = {
+			{
+				"<leader>eo",
+				function()
+					require("oil").open()
+				end,
+				desc = "Oil",
+			},
+		},
+		opts = {},
 	},
 	{ -- Fuzzy Finder (files, lsp, etc)
 		"nvim-telescope/telescope.nvim",
@@ -35,9 +48,14 @@ return {
 				end,
 			},
 			{ "nvim-telescope/telescope-ui-select.nvim" },
-			{ "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
+			{ "echasnovski/mini.nvim" },
 		},
 		config = function()
+			-- Compatibility shim for newer Neovim deprecating ft_to_lang
+			if not vim.treesitter.language.ft_to_lang then
+				vim.treesitter.language.ft_to_lang = vim.treesitter.language.get_lang
+			end
+
 			require("telescope").setup({
 				extensions = {
 					["ui-select"] = {
@@ -63,9 +81,7 @@ return {
 			vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = 'Search Recent Files ("." for repeat)' })
 			vim.keymap.set("n", "<leader>bb", builtin.buffers, { desc = "Find existing buffers" })
 
-			-- Slightly advanced example of overriding default behavior and theme
 			vim.keymap.set("n", "<leader>/", function()
-				-- You can pass additional configuration to Telescope to change the theme, layout, etc.
 				builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
 					winblend = 10,
 					previewer = false,
