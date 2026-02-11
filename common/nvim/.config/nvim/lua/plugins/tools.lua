@@ -7,7 +7,6 @@ return {
 		config = function()
 			require("legendary").setup({
 				extensions = {
-					nvim_tree = true,
 					which_key = { auto_register = true },
 					lazy_nvim = { auto_register = true },
 				},
@@ -52,20 +51,6 @@ return {
 			require("mini.ai").setup({ n_lines = 500 })
 			require("mini.tabline").setup()
 			require("mini.surround").setup()
-			require("mini.notify").setup({
-				content = {
-					format = nil,
-					sort = nil,
-				},
-				lsp_progress = {
-					enable = false,
-				},
-				window = {
-					config = {},
-					max_width_share = 0.382,
-					winblend = 25,
-				},
-			})
 		end,
 	},
 	{
@@ -84,7 +69,13 @@ return {
 			{ "<C-n>", "<Plug>(YankyNextEntry)", desc = "Cycle yank history forward" },
 			{ "]p", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put indented after" },
 			{ "[p", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put indented before" },
-			{ "<leader>sy", function() require("telescope").extensions.yank_history.yank_history({}) end, desc = "Search Yank History" },
+			{
+				"<leader>sy",
+				function()
+					require("telescope").extensions.yank_history.yank_history({})
+				end,
+				desc = "Search Yank History",
+			},
 		},
 		config = function(_, opts)
 			require("yanky").setup(opts)

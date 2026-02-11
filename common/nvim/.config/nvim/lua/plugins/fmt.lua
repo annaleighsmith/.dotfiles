@@ -2,7 +2,6 @@ return {
 
 	{ "tpope/vim-sleuth" }, -- Detect tabstop and shiftwidth automatically
 	{ "LudoPinelli/comment-box.nvim" },
-	{ "numToStr/Comment.nvim", opts = {} },
 	{
 		"norcalli/nvim-colorizer.lua",
 		config = function()
@@ -52,8 +51,24 @@ return {
 			end,
 			formatters_by_ft = {
 				lua = { "stylua" },
+				python = { "ruff_format" },
+				javascript = { "prettier" },
+				javascriptreact = { "prettier" },
+				typescript = { "prettier" },
+				typescriptreact = { "prettier" },
+				html = { "prettier" },
+				css = { "prettier" },
 			},
 		},
+	},
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		ft = "markdown",
+		dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" },
+		keys = {
+			{ "<leader>td", "<Cmd>RenderMarkdown toggle<CR>", desc = "Toggle Markdown preview" },
+		},
+		opts = {},
 	},
 	{ -- Linting
 		"mfussenegger/nvim-lint",

@@ -1,8 +1,9 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
 		opts = {
-			ensure_installed = { "bash", "c", "html", "lua", "luadoc", "markdown", "vim", "vimdoc", "query", "python" },
+			ensure_installed = { "bash", "c", "html", "css", "javascript", "typescript", "lua", "luadoc", "markdown", "vim", "vimdoc", "query", "python" },
 			auto_install = true,
 			highlight = {
 				enable = true,
@@ -80,8 +81,8 @@ return {
 					map("<leader>ld", require("telescope.builtin").lsp_type_definitions, "Type Definition")
 					map("<leader>ls", require("telescope.builtin").lsp_document_symbols, "Document Symbols")
 					map("<leader>lw", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Workspace Symbols")
-					map("<leader>rn", vim.lsp.buf.rename, "Rename")
 					map("<leader>ca", vim.lsp.buf.code_action, "Code Action")
+					map("<leader>cr", vim.lsp.buf.rename, "Rename Symbol")
 					map("K", vim.lsp.buf.hover, "Hover Documentation")
 					map("gD", vim.lsp.buf.declaration, "Goto Declaration")
 
@@ -143,6 +144,8 @@ return {
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, {
 				"stylua",
+				"ruff",
+				"prettier",
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 

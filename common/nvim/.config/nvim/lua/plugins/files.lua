@@ -37,7 +37,7 @@ return {
 	{ -- Fuzzy Finder (files, lsp, etc)
 		"nvim-telescope/telescope.nvim",
 		event = "VimEnter",
-		branch = "0.1.x",
+		branch = "master",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			{ -- If encountering errors, see telescope-fzf-native README for installation instructions
@@ -51,7 +51,7 @@ return {
 			{ "echasnovski/mini.nvim" },
 		},
 		config = function()
-			-- Compatibility shim for newer Neovim deprecating ft_to_lang
+			-- Shim for Neovim 0.11+ which removed ft_to_lang
 			if not vim.treesitter.language.ft_to_lang then
 				vim.treesitter.language.ft_to_lang = vim.treesitter.language.get_lang
 			end

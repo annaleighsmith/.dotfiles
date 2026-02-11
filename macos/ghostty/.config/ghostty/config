@@ -49,7 +49,31 @@
 # resize-overlay-duration = 4s 200ms
 #
 font-family = "FiraCode Nerd Font Mono"
-background-opacity = 1
+background-opacity = 1.0
+
+# OneNord colors
+background = #2E3440
+foreground = #C8D0E0
+
+# Normal colors
+palette = 0=#3B4252
+palette = 1=#BF616A
+palette = 2=#A3BE8C
+palette = 3=#EBCB8B
+palette = 4=#81A1C1
+palette = 5=#B48EAD
+palette = 6=#88C0D0
+palette = 7=#E5E9F0
+
+# Bright colors
+palette = 8=#4C566A
+palette = 9=#D57780
+palette = 10=#8FBCBB
+palette = 11=#D08F70
+palette = 12=#5E81AC
+palette = 13=#B988B0
+palette = 14=#80B3B6
+palette = 15=#ECEFF4
 
 keybind = super+b=new_split
 keybind = super+n=new_window

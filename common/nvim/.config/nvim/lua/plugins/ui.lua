@@ -28,34 +28,19 @@ return {
 		priority = 100,
 		init = function()
 			require("onenord").setup({
-				disable = {
-					background = true,
-				},
 				custom_highlights = {
 					RainbowDelimiterRed = { fg = colors.red },
 					RainbowDelimiterOrange = { fg = colors.orange },
 					RainbowDelimiterYellow = { fg = colors.yellow },
-					RainbowDelimiterBlue = { fg = colors.blue },
 					RainbowDelimiterGreen = { fg = colors.green },
 					RainbowDelimiterCyan = { fg = colors.cyan },
-					RainbowDelimiterViolet = { fg = colors.purple },
-					WhichKey = { fg = colors.green, bold = true },
-					WhichKeyGroup = { fg = colors.purple },
-					WhichKeyDesc = { fg = colors.fg_light },
-					WhichKeyFloat = { bg = colors.bg },
+					RainbowDelimiterBlue = { fg = colors.blue },
+					RaibowDelimiterViolet = { fg = colors.purple },
 					SnacksDashboardHeader = { fg = colors.green },
 					SnacksDashboardKey = { fg = colors.cyan },
 					SnacksDashboardIcon = { fg = colors.cyan },
 					SnacksDashboardDesc = { fg = colors.cyan },
 					SnacksDashboardFooter = { fg = colors.light_purple },
-					BufferTabpageFill = { bg = "NONE" },
-					BufferCurrent = { bg = "NONE", bold = true },
-					BufferCurrentSign = { bg = "NONE" },
-					BufferCurrentMod = { bg = "NONE", bold = true },
-					BufferVisible = { bg = "NONE" },
-					BufferVisibleSign = { bg = "NONE" },
-					BufferInactive = { bg = "NONE" },
-					BufferInactiveSign = { bg = "NONE" },
 				},
 			})
 		end,
@@ -121,6 +106,7 @@ return {
 		priority = 1000,
 		lazy = false,
 		opts = {
+			notifier = { enabled = true },
 			dashboard = {
 				preset = {
 					header = table.concat({
@@ -135,20 +121,20 @@ return {
 						"                ||___________||   |               ",
 						"                |   _______   |  /                ",
 						"               /|  (_______)  | /                 ",
-						"              ( |_____________|/                  ",
-						"          .=======================.              ",
-						"          | ::::::::::::::::  ::: |              ",
-						"          | ::::::::::::::[]  ::: |              ",
-						"          |   -----------     ::: |              ",
-						"          \\-----------------------'              ",
+						"              ( |_____________|/___               ",
+						"          .=======================.\\              ",
+						"          | ::::::::::::::::  ::: | \\             ",
+						"          | ::::::::::::::[]  ::: |  \\            ",
+						"          |   -----------     ::: |   (|)         ",
+						"          '-----------------------'   [ ]        ",
 					}, "\n"),
 					keys = {
-						{ icon = "", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
-						{ icon = " ", key = "f", desc = "Find File", action = ":Telescope find_files hidden=true" },
-						{ icon = " ", key = "w", desc = "Find Word", action = ":Telescope live_grep" },
+						{ icon = "󱞳 ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
+						{ icon = " ", key = "f", desc = "Find File", action = ":Telescope find_files hidden=true" },
+						{ icon = "󰈭 ", key = "w", desc = "Find Word", action = ":Telescope live_grep" },
 						{ icon = "󰇚 ", key = "l", desc = "Lazy", action = ":Lazy home" },
-						{ icon = " ", key = "h", desc = "Check Health", action = ":checkhealth" },
-						{ icon = " ", key = "q", desc = "Quit", action = ":q" },
+						{ icon = " ", key = "h", desc = "Check Health", action = ":checkhealth" },
+						{ icon = " ", key = "q", desc = "Quit", action = ":q" },
 					},
 				},
 				sections = {
@@ -165,49 +151,71 @@ return {
 		opts = {
 			blending = {
 				threshold = 0.1,
-				colorcode = "#EBCB8B",
+				colorcode = colors.yellow,
 				hlgroup = { "Normal", "bg" },
 			},
 			warning = {
 				alpha = 0.4,
 				offset = 0,
-				colorcode = "#E06C75",
+				colorcode = colors.red,
 				hlgroup = { "Error", "bg" },
 			},
 		},
 	},
 	{
-		"petertriho/nvim-scrollbar",
-		dependencies = { "lewis6991/gitsigns.nvim" },
-		opts = {
-			excluded_filetypes = {
-				"snacks_dashboard",
-				"neo-tree",
-				"help",
-				"alpha",
-				"Trouble",
-				"trouble",
-				"lazy",
-				"mason",
-				"notify",
-				"toggleterm",
-			},
-			hide_if_all_visible = true,
-			marks = {
-				Cursor = {
-					text = " ",
-					priority = 99,
+		"echasnovski/mini.nvim",
+		event = { "BufReadPre", "BufNewFile" },
+		config = function()
+			local map = require("mini.map")
+			map.setup({
+				symbols = {
+					encode = map.gen_encode_symbols.dot("4x2"),
 				},
-			},
-			handle = {
-				blend = 20,
-				highlight = "Cursor",
-			},
-			handlers = {
-				gitsigns = true,
-				cursor = true,
-			},
-		},
+				integrations = {
+					map.gen_integration.builtin_search(),
+					map.gen_integration.gitsigns(),
+					map.gen_integration.diagnostic(),
+				},
+				window = {
+					focusable = false,
+					side = "right",
+					width = 7,
+					winblend = 50,
+					show_integration_count = false,
+					wo = {
+						number = false,
+						relativenumber = false,
+					},
+				},
+			})
+			vim.keymap.set("n", "<leader>tm", function()
+				map.toggle()
+			end, { desc = "Toggle Mini Map" })
+			-- Auto-open on buffer enter
+			vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+				callback = function()
+					local ft = vim.bo.filetype
+					local excluded = {
+						"snacks_dashboard",
+						"neo-tree",
+						"help",
+						"Trouble",
+						"trouble",
+						"lazy",
+						"mason",
+						"notify",
+						"toggleterm",
+						"oil",
+					}
+					for _, v in ipairs(excluded) do
+						if ft == v then
+							return
+						end
+					end
+					map.open()
+				end,
+			})
+		end,
 	},
 	{
 		"nvim-lualine/lualine.nvim",
@@ -255,32 +263,6 @@ return {
 		end,
 	},
 
-	{
-		"folke/noice.nvim",
-		event = "VeryLazy",
-		config = function()
-			require("noice").setup({
-				cmdline = {
-					view = "cmdline",
-				},
-				presets = {
-					bottom_search = true,
-					lsp_doc_border = true,
-					long_message_to_split = true,
-				},
-				lsp = {
-					override = {
-						["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-						["vim.lsp.util.stylize_markdown"] = true,
-						["cmp.entry.get_documentation"] = true,
-					},
-				},
-			})
-		end,
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-		},
-	},
 	{ -- Useful plugin to show you pending keybinds.
 		"folke/which-key.nvim",
 		event = "VimEnter",
@@ -290,9 +272,8 @@ return {
 				{ "<leader>c", group = "Code" },
 				{ "<leader>e", group = "Explore", icon = " " },
 				{ "<leader>g", group = "GitHunk" },
-				{ "<leader>h", group = "Harpoon" },
-				{ "<leader>l", group = "LSP" },
-				{ "<leader>r", group = "Rename" },
+				{ "<leader>h", group = "Harpoon", icon = " " },
+				{ "<leader>l", group = "LSP", icon = " " },
 				{ "<leader>s", group = "Search" },
 				{ "<leader>t", group = "Toggle" },
 				{ "<leader>h", desc = "Git Hunk", mode = "v" },
