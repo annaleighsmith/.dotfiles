@@ -2,38 +2,45 @@
 
 local json = require("dkjson")
 
-local STATS_PATH = os.getenv("HOME") .. "/.claude/stats-cache.json"
-
 -- Convert "#RRGGBB" to truecolor ANSI foreground escape
 local function hex(s)
 	local r, g, b = s:match("#(%x%x)(%x%x)(%x%x)")
 	return string.format("\027[38;2;%d;%d;%dm", tonumber(r, 16), tonumber(g, 16), tonumber(b, 16))
 end
-
--- ââ Theme ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+-- #B48EAD
 local colors = {
-	reset     = "\027[0m",
-	model     = hex("#88C0D0"), -- model name
-	icon      = hex("#88C0D0"), -- icons
-	text      = hex("#8a8a8a"), -- default text
-	sep       = hex("#8a8a8a"), -- separator
-	bar_fill  = hex("#88C0D0"), -- filled bar segments
-	bar_empty = hex("#444444"), -- empty bar segments
+	reset = "\027[0m",
+	model = hex("#88C0D0"), -- model name
+	icon_model = hex("#B48EAD"), -- model icon
+	icon_dir = hex("#88C0D0"), -- folder icon
+	icon_branch = hex("#9EC183"), -- git branch icon
+	icon_uncommitted = hex("#E06C75"), -- uncommitted icon
+	icon_ahead = hex("#EBCB8B"), -- ahead arrow icon
+	icon_behind = hex("#EBCB8B"), -- behind arrow icon
+	icon_message = hex("#B988B0"), -- chat bubble icon
+	text = hex("#E5E9F0"), -- default text
+	sep = hex("#E5E9F0"), -- separator
+	bar_fill = hex("#88C0D0"), -- filled bar segments
+	bar_empty = hex("#4C566A"), -- empty bar segments
 }
 
 local sep = "|"
 
 -- Nerd Font icons (Unicode escapes so the file stays ASCII-safe)
 local icons = {
-	model       = "",             -- TODO: add your icon
-	dir         = "\u{f07b} ",     -- nf-fa-folder
-	branch      = "\u{e725} ",     -- nf-dev-git_branch
-	uncommitted = " \u{f12a}",     -- nf-fa-exclamation
-	ahead       = " \u{f01e}",     -- nf-fa-repeat (original)
-	behind      = " \u{f0e2}",     -- nf-fa-undo (original)
-	message     = "\u{f075} ",     -- nf-fa-comment
+	model = "\u{ee9c}", -- add your icon
+	dir = "\u{f07b} ", -- nf-fa-folder
+	branch = "\u{e725} ", -- nf-dev-git_branch
+	uncommitted = " \u{f12a}", -- nf-fa-exclamation
+	ahead = " \u{f01e}", -- nf-fa-repeat (original)
+	behind = " \u{f0e2}", -- nf-fa-undo (original)
+	message = "\u{f075} ", -- nf-fa-comment
 }
--- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+
+-- Strip ANSI escape sequences for visual-width measurement
+local function strip_ansi(s)
+	return s:gsub("\027%[[%d;]*m", "")
+end
 
 -- Run a shell command and return trimmed stdout
 local function run(cmd)
@@ -65,7 +72,9 @@ end
 
 -- Format a time difference as human-readable
 local function format_ago(diff)
-	if diff < 60 then
+	if diff <= 0 then
+		return "<1m ago"
+	elseif diff < 60 then
 		return "<1m ago"
 	elseif diff < 3600 then
 		return string.format("%dm ago", math.floor(diff / 60))
@@ -93,76 +102,81 @@ local branch = ""
 local git_status = ""
 
 if cwd ~= "" then
-	branch = run(string.format("git -C %q branch --show-current 2>/dev/null", cwd))
+	-- Single git call: branch, upstream, ahead/behind, and file status
+	local porcelain =
+		run(string.format("git -C %q --no-optional-locks status --porcelain=v2 --branch 2>/dev/null", cwd))
 
-	if branch ~= "" then
-		-- Count uncommitted files
-		local porcelain = run(string.format("git -C %q --no-optional-locks status --porcelain 2>/dev/null", cwd))
+	if porcelain ~= "" then
 		local file_count = 0
-		local first_file = ""
+		local ahead, behind = 0, 0
+		local has_upstream = false
+
 		for line in porcelain:gmatch("[^\n]+") do
-			file_count = file_count + 1
-			if file_count == 1 then
-				first_file = line:sub(4)
+			if line:match("^# branch%.head ") then
+				branch = line:match("^# branch%.head (.+)") or ""
+			elseif line:match("^# branch%.ab ") then
+				local a, b = line:match("^# branch%.ab %+(%d+) %-(%d+)")
+				ahead = tonumber(a) or 0
+				behind = tonumber(b) or 0
+				has_upstream = true
+			elseif line:match("^# branch%.upstream ") then
+				has_upstream = true
+			elseif not line:match("^#") then
+				file_count = file_count + 1
 			end
 		end
 
-		-- Sync status with upstream
-		local sync_status
-		local upstream = run(string.format("git -C %q rev-parse --abbrev-ref @{upstream} 2>/dev/null", cwd))
-
-		if upstream ~= "" then
-			-- Last fetch time
-			local fetch_ago = ""
-			local fetch_head = cwd .. "/.git/FETCH_HEAD"
-			local fh = io.open(fetch_head, "r")
-			if fh then
-				fh:close()
-				local fetch_time = tonumber(
-					run(
-						string.format(
+		if branch ~= "" and branch ~= "(detached)" then
+			local sync_status
+			if has_upstream then
+				if ahead == 0 and behind == 0 then
+					-- Only check fetch time when synced (no need to stat otherwise)
+					local fetch_ago = ""
+					local fetch_head = cwd .. "/.git/FETCH_HEAD"
+					local fh = io.open(fetch_head, "r")
+					if fh then
+						fh:close()
+						local fetch_time = tonumber(run(string.format(
 							"stat -f %%m %q 2>/dev/null || stat -c %%Y %q 2>/dev/null",
-							fetch_head,
-							fetch_head
-						)
-					)
-				)
-				if fetch_time then
-					local now = os.time()
-					fetch_ago = format_ago(now - fetch_time)
+							fetch_head, fetch_head)))
+						if fetch_time then
+							fetch_ago = format_ago(os.time() - fetch_time)
+						end
+					end
+					sync_status = fetch_ago ~= "" and ("synced " .. fetch_ago) or "synced"
+				elseif ahead > 0 and behind == 0 then
+					sync_status = colors.text .. string.format("%d", ahead) .. colors.icon_ahead .. icons.ahead
+				elseif ahead == 0 and behind > 0 then
+					sync_status = colors.text .. string.format("%d", behind) .. colors.icon_behind .. icons.behind
+				else
+					sync_status = colors.text
+						.. string.format("%d", ahead)
+						.. colors.icon_ahead
+						.. icons.ahead
+						.. " "
+						.. colors.text
+						.. string.format("%d", behind)
+						.. colors.icon_behind
+						.. icons.behind
 				end
-			end
-
-			local counts =
-				run(string.format("git -C %q rev-list --left-right --count HEAD...@{upstream} 2>/dev/null", cwd))
-			local ahead, behind = counts:match("(%d+)%s+(%d+)")
-			ahead = tonumber(ahead) or 0
-			behind = tonumber(behind) or 0
-
-			if ahead == 0 and behind == 0 then
-				sync_status = fetch_ago ~= "" and ("synced " .. fetch_ago) or "synced"
-			elseif ahead > 0 and behind == 0 then
-				sync_status = colors.text .. string.format("%d", ahead) .. colors.icon .. icons.ahead
-			elseif ahead == 0 and behind > 0 then
-				sync_status = colors.text .. string.format("%d", behind) .. colors.icon .. icons.behind
 			else
-				sync_status = colors.text .. string.format("%d", ahead) .. colors.icon .. icons.ahead
-					.. " " .. colors.text .. string.format("%d", behind) .. colors.icon .. icons.behind
+				sync_status = "no upstream"
 			end
-		else
-			sync_status = "no upstream"
-		end
 
-		-- Build git status string
-		local parts = {}
-		if file_count > 0 then
-			parts[#parts + 1] = colors.text .. string.format("%d", file_count) .. colors.icon .. icons.uncommitted
-		end
-		if sync_status ~= "synced" and sync_status ~= "no upstream" and not sync_status:match("^synced ") then
-			parts[#parts + 1] = sync_status
-		end
-		if #parts > 0 then
-			git_status = table.concat(parts, " ")
+			-- Build git status string
+			local parts = {}
+			if file_count > 0 then
+				parts[#parts + 1] = colors.text
+					.. string.format("%d", file_count)
+					.. colors.icon_uncommitted
+					.. icons.uncommitted
+			end
+			if sync_status ~= "synced" and sync_status ~= "no upstream" and not sync_status:match("^synced ") then
+				parts[#parts + 1] = sync_status
+			end
+			if #parts > 0 then
+				git_status = table.concat(parts, " ")
+			end
 		end
 	end
 end
@@ -170,18 +184,18 @@ end
 -- 20k baseline: system prompt (~3k), tools (~15k), memory (~300), plus dynamic context
 local baseline = 20000
 
--- Read transcript once
+-- Read only the tail of the transcript (last 200 lines is plenty for recent usage + last user msg)
 local transcript_lines = {}
 if transcript_path ~= "" then
-	local fh = io.open(transcript_path, "r")
-	if fh then
-		for line in fh:lines() do
+	local h = io.popen(string.format("tail -n 200 %q 2>/dev/null", transcript_path), "r")
+	if h then
+		for line in h:lines() do
 			local obj = json.decode(line)
 			if obj then
 				transcript_lines[#transcript_lines + 1] = obj
 			end
 		end
-		fh:close()
+		h:close()
 	end
 end
 
@@ -219,42 +233,33 @@ end
 
 local ctx = string.format("%s %s%s%d%% / %dk", draw_bar(pct), colors.text, pct_prefix, pct, max_k)
 
--- Today's token usage from stats-cache
-local today_tokens = ""
-local stats_fh = io.open(STATS_PATH, "r")
-if stats_fh then
-	local stats_raw = stats_fh:read("*a")
-	stats_fh:close()
-	local stats = json.decode(stats_raw)
-	if stats and stats.dailyModelTokens then
-		local today = os.date("%Y-%m-%d")
-		for _, day in ipairs(stats.dailyModelTokens) do
-			if day.date == today and day.tokensByModel then
-				local total = 0
-				for _, tokens in pairs(day.tokensByModel) do
-					total = total + tokens
-				end
-				if total >= 1000 then
-					today_tokens = string.format("%dk today", math.floor(total / 1000))
-				else
-					today_tokens = string.format("%d today", total)
-				end
-				break
-			end
-		end
-	end
-end
-
-local usage = ""
-if today_tokens ~= "" then
-	usage = " " .. colors.sep .. sep .. " " .. colors.text .. today_tokens
-end
+local usage = " " .. colors.sep .. sep .. " " .. hex("#B48EAD") .. "69k"
 
 -- Build main output line
-local mi = icons.model ~= "" and (colors.icon .. icons.model .. " ") or ""
-local output = mi .. colors.model .. model .. " " .. colors.sep .. sep .. " " .. colors.icon .. icons.dir .. " " .. colors.text .. dir
+local mi = icons.model ~= "" and (colors.icon_model .. icons.model .. " ") or ""
+local output = mi
+	.. colors.model
+	.. model
+	.. " "
+	.. colors.sep
+	.. sep
+	.. " "
+	.. colors.icon_dir
+	.. icons.dir
+	.. " "
+	.. colors.text
+	.. dir
 if branch ~= "" then
-	output = output .. " " .. colors.sep .. sep .. " " .. colors.icon .. icons.branch .. " " .. colors.text .. branch
+	output = output
+		.. " "
+		.. colors.sep
+		.. sep
+		.. " "
+		.. colors.icon_branch
+		.. icons.branch
+		.. " "
+		.. colors.text
+		.. branch
 	if git_status ~= "" then
 		output = output .. " " .. git_status
 	end
@@ -270,13 +275,10 @@ if #transcript_lines > 0 then
 	if branch ~= "" then
 		plain = plain .. " " .. sep .. " x " .. branch
 		if git_status ~= "" then
-			plain = plain .. " " .. git_status
+			plain = plain .. " " .. strip_ansi(git_status)
 		end
 	end
 	plain = plain .. " " .. sep .. " xxxxxxxxxx " .. pct .. "% / " .. max_k .. "k"
-	if today_tokens ~= "" then
-		plain = plain .. " " .. sep .. " " .. today_tokens
-	end
 	local max_len = #plain
 
 	-- Find last real user message, skipping interrupts/system noise
@@ -307,8 +309,9 @@ if #transcript_lines > 0 then
 				text ~= ""
 				and not text:match("^%[Request interrupted")
 				and not text:match("^%[Request cancelled")
-				and not text:find("<local%-command%-stdout>", 1, false)
-				and not text:find("<local%-command%-caveat>", 1, false)
+				and not text:find("<local-command-stdout>", 1, true)
+				and not text:find("<local-command-caveat>", 1, true)
+				and not text:find("<command-name>", 1, true)
 			then
 				last_user_msg = text
 				break
@@ -318,9 +321,16 @@ if #transcript_lines > 0 then
 
 	if last_user_msg ~= "" then
 		if #last_user_msg > max_len then
-			io.write(" " .. colors.icon .. icons.message .. colors.text .. last_user_msg:sub(1, max_len - 4) .. "...\n")
+			io.write(
+				" "
+					.. colors.icon_message
+					.. icons.message
+					.. colors.text
+					.. last_user_msg:sub(1, max_len - 4)
+					.. "...\n"
+			)
 		else
-			io.write(" " .. colors.icon .. icons.message .. colors.text .. last_user_msg .. "\n")
+			io.write(" " .. colors.icon_message .. icons.message .. colors.text .. last_user_msg .. "\n")
 		end
 	end
 end
