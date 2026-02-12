@@ -184,10 +184,10 @@ end
 -- 20k baseline: system prompt (~3k), tools (~15k), memory (~300), plus dynamic context
 local baseline = 20000
 
--- Read only the tail of the transcript (last 200 lines is plenty for recent usage + last user msg)
+-- Read only the last 5 transcript entries (usage is always near the end; skip stale user msgs)
 local transcript_lines = {}
 if transcript_path ~= "" then
-	local h = io.popen(string.format("tail -n 200 %q 2>/dev/null", transcript_path), "r")
+	local h = io.popen(string.format("tail -n 5 %q 2>/dev/null", transcript_path), "r")
 	if h then
 		for line in h:lines() do
 			local obj = json.decode(line)
