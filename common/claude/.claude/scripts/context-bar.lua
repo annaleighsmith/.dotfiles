@@ -2,21 +2,34 @@
 
 local json = require("dkjson")
 
+-- ── Configuration ──────────────────────────────────────────────
+-- Daily output token limit for your plan (used for % calculation)
+-- Pro ≈ 1M, Max 5x ≈ 5M (adjust to match your actual limits)
+local DAILY_TOKEN_LIMIT = 1000000
+local STATS_PATH = os.getenv("HOME") .. "/.claude/stats-cache.json"
+-- ───────────────────────────────────────────────────────────────
+
+-- Convert "#RRGGBB" to truecolor ANSI foreground escape
+local function hex(s)
+	local r, g, b = s:match("#(%x%x)(%x%x)(%x%x)")
+	return string.format("\027[38;2;%d;%d;%dm", tonumber(r, 16), tonumber(g, 16), tonumber(b, 16))
+end
+
 -- Nord/OneNord color palette
 local c = {
 	reset = "\027[0m",
-	accent = "\027[38;5;116m", -- nord8 cyan (#88C0D0)
-	gray = "\027[38;5;245m", -- muted text
-	bar_empty = "\027[38;5;238m", -- near-background
+	accent = hex("#88C0D0"), -- nord8 cyan
+	gray = hex("#8a8a8a"), -- muted text
+	bar_empty = hex("#444444"), -- near-background
 }
 
 -- Nerd Font icons
 local icons = {
-	dir = " ",      -- nf-fa-folder
-	branch = " ",   -- nf-dev-git_branch
-	uncommitted = " ", -- nf-fa-pencil
-	ahead = " ",     -- nf-fa-arrow_up
-	behind = " ",    -- nf-fa-arrow_down
+	dir = " ",
+	branch = " ",
+	uncommitted = " ",
+	ahead = "  ",
+	behind = "  ",
 }
 
 -- Run a shell command and return trimmed stdout
@@ -65,9 +78,17 @@ local input_raw = io.read("*a") or "{}"
 local input = json.decode(input_raw) or {}
 
 local model = (input.model and (input.model.display_name or input.model.id)) or "?"
+local model_id = (input.model and input.model.id) or ""
 local cwd = input.cwd or ""
 local transcript_path = input.transcript_path or ""
 local max_context = (input.context_window and input.context_window.context_window_size) or 200000
+
+-- Pricing per million tokens (USD)
+local pricing = {
+	["claude-opus-4-6"] = { input = 15, output = 75, cache_read = 1.50, cache_write = 18.75 },
+	["claude-sonnet-4-5-20250929"] = { input = 3, output = 15, cache_read = 0.30, cache_write = 3.75 },
+	["claude-haiku-4-5-20251001"] = { input = 0.25, output = 1.25, cache_read = 0.025, cache_write = 0.3125 },
+}
 
 local dir = cwd:match("[^/]+$") or "?"
 local max_k = math.floor(max_context / 1000)
@@ -145,7 +166,7 @@ if cwd ~= "" then
 			parts[#parts + 1] = sync_status
 		end
 		if #parts > 0 then
-			git_status = "(" .. table.concat(parts, " ") .. ")"
+			git_status = table.concat(parts, " ")
 		end
 	end
 end
@@ -202,6 +223,61 @@ end
 
 local ctx = string.format("%s %s%s%d%% / %dk", draw_bar(pct), c.gray, pct_prefix, pct, max_k)
 
+-- Calculate session cost from transcript
+local session_cost = 0
+local price = pricing[model_id]
+if price and #transcript_lines > 0 then
+	for _, entry in ipairs(transcript_lines) do
+		if entry.message and entry.message.usage and not entry.isSidechain and not entry.isApiErrorMessage then
+			local u = entry.message.usage
+			session_cost = session_cost
+				+ (u.input_tokens or 0) * price.input / 1e6
+				+ (u.output_tokens or 0) * price.output / 1e6
+				+ (u.cache_read_input_tokens or 0) * price.cache_read / 1e6
+				+ (u.cache_creation_input_tokens or 0) * price.cache_write / 1e6
+		end
+	end
+end
+
+-- Daily usage from stats-cache
+local daily_pct = ""
+local stats_fh = io.open(STATS_PATH, "r")
+if stats_fh then
+	local stats_raw = stats_fh:read("*a")
+	stats_fh:close()
+	local stats = json.decode(stats_raw)
+	if stats and stats.dailyModelTokens then
+		local today = os.date("%Y-%m-%d")
+		for _, day in ipairs(stats.dailyModelTokens) do
+			if day.date == today and day.tokensByModel then
+				local total = 0
+				for _, tokens in pairs(day.tokensByModel) do
+					total = total + tokens
+				end
+				if DAILY_TOKEN_LIMIT > 0 then
+					local dp = math.floor(total * 100 / DAILY_TOKEN_LIMIT)
+					if dp > 100 then dp = 100 end
+					daily_pct = string.format("%d%% daily", dp)
+				end
+				break
+			end
+		end
+	end
+end
+
+-- Format cost + daily usage
+local usage = ""
+if session_cost > 0 or daily_pct ~= "" then
+	local parts = {}
+	if session_cost > 0 then
+		parts[#parts + 1] = string.format("$%.2f", session_cost)
+	end
+	if daily_pct ~= "" then
+		parts[#parts + 1] = daily_pct
+	end
+	usage = " | " .. c.gray .. table.concat(parts, " ")
+end
+
 -- Build main output line
 local output = c.accent .. model .. c.gray .. " | " .. icons.dir .. dir
 if branch ~= "" then
@@ -210,7 +286,7 @@ if branch ~= "" then
 		output = output .. " " .. git_status
 	end
 end
-output = output .. " | " .. ctx .. c.reset
+output = output .. " | " .. ctx .. usage .. c.reset
 
 io.write(output .. "\n")
 
@@ -225,6 +301,12 @@ if #transcript_lines > 0 then
 		end
 	end
 	plain = plain .. " | xxxxxxxxxx " .. pct .. "% / " .. max_k .. "k"
+	if session_cost > 0 then
+		plain = plain .. " | " .. string.format("$%.2f", session_cost)
+	end
+	if daily_pct ~= "" then
+		plain = plain .. " " .. daily_pct
+	end
 	local max_len = #plain
 
 	-- Find last real user message, skipping interrupts/system noise
