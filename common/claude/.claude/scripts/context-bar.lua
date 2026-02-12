@@ -2,12 +2,7 @@
 
 local json = require("dkjson")
 
--- ── Configuration ──────────────────────────────────────────────
--- Daily output token limit for your plan (used for % calculation)
--- Pro ≈ 1M, Max 5x ≈ 5M (adjust to match your actual limits)
-local DAILY_TOKEN_LIMIT = 1000000
 local STATS_PATH = os.getenv("HOME") .. "/.claude/stats-cache.json"
--- ───────────────────────────────────────────────────────────────
 
 -- Convert "#RRGGBB" to truecolor ANSI foreground escape
 local function hex(s)
@@ -15,22 +10,30 @@ local function hex(s)
 	return string.format("\027[38;2;%d;%d;%dm", tonumber(r, 16), tonumber(g, 16), tonumber(b, 16))
 end
 
--- Nord/OneNord color palette
-local c = {
-	reset = "\027[0m",
-	accent = hex("#88C0D0"), -- nord8 cyan
-	gray = hex("#8a8a8a"), -- muted text
-	bar_empty = hex("#444444"), -- near-background
+-- ââ Theme ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+local colors = {
+	reset     = "\027[0m",
+	model     = hex("#88C0D0"), -- model name
+	icon      = hex("#88C0D0"), -- icons
+	text      = hex("#8a8a8a"), -- default text
+	sep       = hex("#8a8a8a"), -- separator
+	bar_fill  = hex("#88C0D0"), -- filled bar segments
+	bar_empty = hex("#444444"), -- empty bar segments
 }
 
--- Nerd Font icons
+local sep = "|"
+
+-- Nerd Font icons (Unicode escapes so the file stays ASCII-safe)
 local icons = {
-	dir = " ",
-	branch = " ",
-	uncommitted = " ",
-	ahead = "  ",
-	behind = "  ",
+	model       = "",             -- TODO: add your icon
+	dir         = "\u{f07b} ",     -- nf-fa-folder
+	branch      = "\u{e725} ",     -- nf-dev-git_branch
+	uncommitted = " \u{f12a}",     -- nf-fa-exclamation
+	ahead       = " \u{f01e}",     -- nf-fa-repeat (original)
+	behind      = " \u{f0e2}",     -- nf-fa-undo (original)
+	message     = "\u{f075} ",     -- nf-fa-comment
 }
+-- ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 -- Run a shell command and return trimmed stdout
 local function run(cmd)
@@ -50,11 +53,11 @@ local function draw_bar(pct)
 		local bar_start = i * 10
 		local progress = pct - bar_start
 		if progress >= 8 then
-			bar[#bar + 1] = c.accent .. "█" .. c.reset
+			bar[#bar + 1] = colors.bar_fill .. "█" .. colors.reset
 		elseif progress >= 3 then
-			bar[#bar + 1] = c.accent .. "▄" .. c.reset
+			bar[#bar + 1] = colors.bar_fill .. "▄" .. colors.reset
 		else
-			bar[#bar + 1] = c.bar_empty .. "░" .. c.reset
+			bar[#bar + 1] = colors.bar_empty .. "░" .. colors.reset
 		end
 	end
 	return table.concat(bar)
@@ -78,17 +81,9 @@ local input_raw = io.read("*a") or "{}"
 local input = json.decode(input_raw) or {}
 
 local model = (input.model and (input.model.display_name or input.model.id)) or "?"
-local model_id = (input.model and input.model.id) or ""
 local cwd = input.cwd or ""
 local transcript_path = input.transcript_path or ""
 local max_context = (input.context_window and input.context_window.context_window_size) or 200000
-
--- Pricing per million tokens (USD)
-local pricing = {
-	["claude-opus-4-6"] = { input = 15, output = 75, cache_read = 1.50, cache_write = 18.75 },
-	["claude-sonnet-4-5-20250929"] = { input = 3, output = 15, cache_read = 0.30, cache_write = 3.75 },
-	["claude-haiku-4-5-20251001"] = { input = 0.25, output = 1.25, cache_read = 0.025, cache_write = 0.3125 },
-}
 
 local dir = cwd:match("[^/]+$") or "?"
 local max_k = math.floor(max_context / 1000)
@@ -147,11 +142,12 @@ if cwd ~= "" then
 			if ahead == 0 and behind == 0 then
 				sync_status = fetch_ago ~= "" and ("synced " .. fetch_ago) or "synced"
 			elseif ahead > 0 and behind == 0 then
-				sync_status = string.format("%d%s", ahead, icons.ahead)
+				sync_status = colors.text .. string.format("%d", ahead) .. colors.icon .. icons.ahead
 			elseif ahead == 0 and behind > 0 then
-				sync_status = string.format("%d%s", behind, icons.behind)
+				sync_status = colors.text .. string.format("%d", behind) .. colors.icon .. icons.behind
 			else
-				sync_status = string.format("%d%s%d%s", ahead, icons.ahead, behind, icons.behind)
+				sync_status = colors.text .. string.format("%d", ahead) .. colors.icon .. icons.ahead
+					.. " " .. colors.text .. string.format("%d", behind) .. colors.icon .. icons.behind
 			end
 		else
 			sync_status = "no upstream"
@@ -160,7 +156,7 @@ if cwd ~= "" then
 		-- Build git status string
 		local parts = {}
 		if file_count > 0 then
-			parts[#parts + 1] = string.format("%d%s", file_count, icons.uncommitted)
+			parts[#parts + 1] = colors.text .. string.format("%d", file_count) .. colors.icon .. icons.uncommitted
 		end
 		if sync_status ~= "synced" and sync_status ~= "no upstream" and not sync_status:match("^synced ") then
 			parts[#parts + 1] = sync_status
@@ -221,26 +217,10 @@ if pct > 100 then
 	pct = 100
 end
 
-local ctx = string.format("%s %s%s%d%% / %dk", draw_bar(pct), c.gray, pct_prefix, pct, max_k)
+local ctx = string.format("%s %s%s%d%% / %dk", draw_bar(pct), colors.text, pct_prefix, pct, max_k)
 
--- Calculate session cost from transcript
-local session_cost = 0
-local price = pricing[model_id]
-if price and #transcript_lines > 0 then
-	for _, entry in ipairs(transcript_lines) do
-		if entry.message and entry.message.usage and not entry.isSidechain and not entry.isApiErrorMessage then
-			local u = entry.message.usage
-			session_cost = session_cost
-				+ (u.input_tokens or 0) * price.input / 1e6
-				+ (u.output_tokens or 0) * price.output / 1e6
-				+ (u.cache_read_input_tokens or 0) * price.cache_read / 1e6
-				+ (u.cache_creation_input_tokens or 0) * price.cache_write / 1e6
-		end
-	end
-end
-
--- Daily usage from stats-cache
-local daily_pct = ""
+-- Today's token usage from stats-cache
+local today_tokens = ""
 local stats_fh = io.open(STATS_PATH, "r")
 if stats_fh then
 	local stats_raw = stats_fh:read("*a")
@@ -254,10 +234,10 @@ if stats_fh then
 				for _, tokens in pairs(day.tokensByModel) do
 					total = total + tokens
 				end
-				if DAILY_TOKEN_LIMIT > 0 then
-					local dp = math.floor(total * 100 / DAILY_TOKEN_LIMIT)
-					if dp > 100 then dp = 100 end
-					daily_pct = string.format("%d%% daily", dp)
+				if total >= 1000 then
+					today_tokens = string.format("%dk today", math.floor(total / 1000))
+				else
+					today_tokens = string.format("%d today", total)
 				end
 				break
 			end
@@ -265,47 +245,37 @@ if stats_fh then
 	end
 end
 
--- Format cost + daily usage
 local usage = ""
-if session_cost > 0 or daily_pct ~= "" then
-	local parts = {}
-	if session_cost > 0 then
-		parts[#parts + 1] = string.format("$%.2f", session_cost)
-	end
-	if daily_pct ~= "" then
-		parts[#parts + 1] = daily_pct
-	end
-	usage = " | " .. c.gray .. table.concat(parts, " ")
+if today_tokens ~= "" then
+	usage = " " .. colors.sep .. sep .. " " .. colors.text .. today_tokens
 end
 
 -- Build main output line
-local output = c.accent .. model .. c.gray .. " | " .. icons.dir .. dir
+local mi = icons.model ~= "" and (colors.icon .. icons.model .. " ") or ""
+local output = mi .. colors.model .. model .. " " .. colors.sep .. sep .. " " .. colors.icon .. icons.dir .. " " .. colors.text .. dir
 if branch ~= "" then
-	output = output .. " | " .. icons.branch .. branch
+	output = output .. " " .. colors.sep .. sep .. " " .. colors.icon .. icons.branch .. " " .. colors.text .. branch
 	if git_status ~= "" then
 		output = output .. " " .. git_status
 	end
 end
-output = output .. " | " .. ctx .. usage .. c.reset
+output = output .. " " .. colors.sep .. sep .. " " .. ctx .. usage .. colors.reset
 
 io.write(output .. "\n")
 
 -- Last user message (second line)
 if #transcript_lines > 0 then
 	-- Calculate max display length from a plain version of the status line
-	local plain = model .. " | x " .. dir
+	local plain = model .. " " .. sep .. " x " .. dir
 	if branch ~= "" then
-		plain = plain .. " | x " .. branch
+		plain = plain .. " " .. sep .. " x " .. branch
 		if git_status ~= "" then
 			plain = plain .. " " .. git_status
 		end
 	end
-	plain = plain .. " | xxxxxxxxxx " .. pct .. "% / " .. max_k .. "k"
-	if session_cost > 0 then
-		plain = plain .. " | " .. string.format("$%.2f", session_cost)
-	end
-	if daily_pct ~= "" then
-		plain = plain .. " " .. daily_pct
+	plain = plain .. " " .. sep .. " xxxxxxxxxx " .. pct .. "% / " .. max_k .. "k"
+	if today_tokens ~= "" then
+		plain = plain .. " " .. sep .. " " .. today_tokens
 	end
 	local max_len = #plain
 
@@ -348,9 +318,9 @@ if #transcript_lines > 0 then
 
 	if last_user_msg ~= "" then
 		if #last_user_msg > max_len then
-			io.write(" " .. last_user_msg:sub(1, max_len - 3) .. "...\n")
+			io.write(" " .. colors.icon .. icons.message .. colors.text .. last_user_msg:sub(1, max_len - 4) .. "...\n")
 		else
-			io.write(" " .. last_user_msg .. "\n")
+			io.write(" " .. colors.icon .. icons.message .. colors.text .. last_user_msg .. "\n")
 		end
 	end
 end
